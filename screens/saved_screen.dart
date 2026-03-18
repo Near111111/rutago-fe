@@ -11,7 +11,6 @@ class SavedScreen extends StatefulWidget {
 }
 
 class _SavedScreenState extends State<SavedScreen> {
-  // Mock saved places
   List<SavedPlace> _savedPlaces = [
     SavedPlace(
       id: '1',
@@ -49,268 +48,6 @@ class _SavedScreenState extends State<SavedScreen> {
     });
   }
 
-  void _showAddPlaceSheet() {
-    final r = Responsive(context);
-    final TextEditingController nameController = TextEditingController();
-    final TextEditingController addressController = TextEditingController();
-    PlaceType selectedType = PlaceType.favorite;
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setSheetState) {
-          return Container(
-            padding: EdgeInsets.fromLTRB(
-              r.spaceMD,
-              r.spaceMD,
-              r.spaceMD,
-              r.spaceMD + MediaQuery.of(context).viewInsets.bottom,
-            ),
-            decoration: BoxDecoration(
-              color: AppColors.surface,
-              borderRadius: BorderRadius.vertical(
-                top: Radius.circular(r.radiusXL),
-              ),
-              border: const Border(
-                top: BorderSide(color: AppColors.borderAlt),
-              ),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-
-                // Handle
-                Center(
-                  child: Container(
-                    width: r.screenWidth * 0.1,
-                    height: 4,
-                    margin: EdgeInsets.only(bottom: r.spaceMD),
-                    decoration: BoxDecoration(
-                      color: AppColors.border,
-                      borderRadius: BorderRadius.circular(999),
-                    ),
-                  ),
-                ),
-
-                Text(
-                  'Add Saved Place',
-                  style: TextStyle(
-                    color: AppColors.textPrimary,
-                    fontSize: r.fontXL,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-
-                SizedBox(height: r.spaceLG),
-
-                // Type selector
-                Text(
-                  'TYPE',
-                  style: TextStyle(
-                    color: AppColors.textDisabled,
-                    fontSize: r.fontXS,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 1.5,
-                  ),
-                ),
-
-                SizedBox(height: r.spaceSM),
-
-                Row(
-                  children: PlaceType.values.map((type) {
-                    final isSelected = selectedType == type;
-                    return Expanded(
-                      child: GestureDetector(
-                        onTap: () =>
-                            setSheetState(() => selectedType = type),
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 200),
-                          margin: EdgeInsets.only(
-                            right: type != PlaceType.values.last
-                                ? r.spaceXS
-                                : 0,
-                          ),
-                          padding: EdgeInsets.symmetric(
-                            vertical: r.spaceSM,
-                          ),
-                          decoration: BoxDecoration(
-                            color: isSelected
-                                ? Colors.white
-                                : AppColors.surfaceAlt,
-                            borderRadius:
-                            BorderRadius.circular(r.radiusMD),
-                            border: Border.all(
-                              color: isSelected
-                                  ? Colors.white
-                                  : AppColors.border,
-                            ),
-                          ),
-                          child: Column(
-                            children: [
-                              Icon(
-                                _getTypeIcon(type),
-                                color: isSelected
-                                    ? Colors.black
-                                    : AppColors.textSecondary,
-                                size: r.iconMD,
-                              ),
-                              SizedBox(height: r.spaceXS * 0.5),
-                              Text(
-                                _getTypeLabel(type),
-                                style: TextStyle(
-                                  color: isSelected
-                                      ? Colors.black
-                                      : AppColors.textSecondary,
-                                  fontSize: r.fontXS,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                ),
-
-                SizedBox(height: r.spaceLG),
-
-                // Name field
-                Text(
-                  'NAME',
-                  style: TextStyle(
-                    color: AppColors.textDisabled,
-                    fontSize: r.fontXS,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 1.5,
-                  ),
-                ),
-
-                SizedBox(height: r.spaceSM),
-
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: r.spaceMD,
-                    vertical: r.spaceSM,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppColors.surfaceAlt,
-                    borderRadius: BorderRadius.circular(r.radiusLG),
-                    border: Border.all(color: AppColors.border),
-                  ),
-                  child: TextField(
-                    controller: nameController,
-                    style: TextStyle(
-                      color: AppColors.textPrimary,
-                      fontSize: r.fontMD,
-                    ),
-                    decoration: InputDecoration(
-                      hintText: 'e.g. Home, Office, Gym',
-                      hintStyle: TextStyle(
-                        color: AppColors.textMuted,
-                        fontSize: r.fontMD,
-                      ),
-                      border: InputBorder.none,
-                      isDense: true,
-                      contentPadding: EdgeInsets.zero,
-                    ),
-                  ),
-                ),
-
-                SizedBox(height: r.spaceMD),
-
-                // Address field
-                Text(
-                  'ADDRESS',
-                  style: TextStyle(
-                    color: AppColors.textDisabled,
-                    fontSize: r.fontXS,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 1.5,
-                  ),
-                ),
-
-                SizedBox(height: r.spaceSM),
-
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: r.spaceMD,
-                    vertical: r.spaceSM,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppColors.surfaceAlt,
-                    borderRadius: BorderRadius.circular(r.radiusLG),
-                    border: Border.all(color: AppColors.border),
-                  ),
-                  child: TextField(
-                    controller: addressController,
-                    style: TextStyle(
-                      color: AppColors.textPrimary,
-                      fontSize: r.fontMD,
-                    ),
-                    decoration: InputDecoration(
-                      hintText: 'e.g. Ayala Avenue, Makati',
-                      hintStyle: TextStyle(
-                        color: AppColors.textMuted,
-                        fontSize: r.fontMD,
-                      ),
-                      border: InputBorder.none,
-                      isDense: true,
-                      contentPadding: EdgeInsets.zero,
-                    ),
-                  ),
-                ),
-
-                SizedBox(height: r.spaceLG),
-
-                // Save button
-                GestureDetector(
-                  onTap: () {
-                    if (nameController.text.isNotEmpty &&
-                        addressController.text.isNotEmpty) {
-                      setState(() {
-                        _savedPlaces.add(SavedPlace(
-                          id: DateTime.now()
-                              .millisecondsSinceEpoch
-                              .toString(),
-                          name: nameController.text,
-                          address: addressController.text,
-                          icon: _getTypeIcon(selectedType),
-                          type: selectedType,
-                        ));
-                      });
-                      Navigator.pop(context);
-                    }
-                  },
-                  child: Container(
-                    width: double.infinity,
-                    padding: EdgeInsets.symmetric(vertical: r.spaceMD),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(r.radiusLG),
-                    ),
-                    child: Text(
-                      'Save Place',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: r.fontMD,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-    );
-  }
-
   IconData _getTypeIcon(PlaceType type) {
     switch (type) {
       case PlaceType.home:
@@ -344,6 +81,279 @@ class _SavedScreenState extends State<SavedScreen> {
     }
   }
 
+  void _showAddPlaceSheet(BuildContext context) {
+    final r = Responsive(context);
+    final TextEditingController nameController = TextEditingController();
+    final TextEditingController addressController = TextEditingController();
+    PlaceType selectedType = PlaceType.favorite;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setSheetState) {
+          return Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+            ),
+            child: Container(
+              padding: EdgeInsets.all(r.spaceMD),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(r.radiusXL),
+                ),
+                border: const Border(
+                  top: BorderSide(color: AppColors.borderAlt),
+                ),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+
+                  // Handle
+                  Center(
+                    child: Container(
+                      width: r.screenWidth * 0.1,
+                      height: 4,
+                      margin: EdgeInsets.only(bottom: r.spaceMD),
+                      decoration: BoxDecoration(
+                        color: AppColors.border,
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                    ),
+                  ),
+
+                  // Title
+                  Text(
+                    'Add Saved Place',
+                    style: TextStyle(
+                      color: AppColors.textPrimary,
+                      fontSize: r.fontXL,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+
+                  SizedBox(height: r.spaceLG),
+
+                  // Type selector label
+                  Text(
+                    'TYPE',
+                    style: TextStyle(
+                      color: AppColors.textDisabled,
+                      fontSize: r.fontXS,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 1.5,
+                    ),
+                  ),
+
+                  SizedBox(height: r.spaceSM),
+
+                  // Type selector
+                  Row(
+                    children: PlaceType.values.map((type) {
+                      final isSelected = selectedType == type;
+                      final isLast =
+                          type == PlaceType.values.last;
+                      return Expanded(
+                        child: GestureDetector(
+                          onTap: () => setSheetState(
+                                  () => selectedType = type),
+                          child: AnimatedContainer(
+                            duration:
+                            const Duration(milliseconds: 200),
+                            margin: EdgeInsets.only(
+                              right: isLast ? 0 : r.spaceXS,
+                            ),
+                            padding: EdgeInsets.symmetric(
+                              vertical: r.spaceSM,
+                            ),
+                            decoration: BoxDecoration(
+                              color: isSelected
+                                  ? Colors.white
+                                  : AppColors.surfaceAlt,
+                              borderRadius: BorderRadius.circular(
+                                  r.radiusMD),
+                              border: Border.all(
+                                color: isSelected
+                                    ? Colors.white
+                                    : AppColors.border,
+                              ),
+                            ),
+                            child: Column(
+                              children: [
+                                Icon(
+                                  _getTypeIcon(type),
+                                  color: isSelected
+                                      ? Colors.black
+                                      : AppColors.textSecondary,
+                                  size: r.iconMD,
+                                ),
+                                SizedBox(height: r.spaceXS * 0.5),
+                                Text(
+                                  _getTypeLabel(type),
+                                  style: TextStyle(
+                                    color: isSelected
+                                        ? Colors.black
+                                        : AppColors.textSecondary,
+                                    fontSize: r.fontXS,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+
+                  SizedBox(height: r.spaceLG),
+
+                  // Name label
+                  Text(
+                    'NAME',
+                    style: TextStyle(
+                      color: AppColors.textDisabled,
+                      fontSize: r.fontXS,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 1.5,
+                    ),
+                  ),
+
+                  SizedBox(height: r.spaceSM),
+
+                  // Name field
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: r.spaceMD,
+                      vertical: r.spaceSM,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.surfaceAlt,
+                      borderRadius:
+                      BorderRadius.circular(r.radiusLG),
+                      border: Border.all(color: AppColors.border),
+                    ),
+                    child: TextField(
+                      controller: nameController,
+                      style: TextStyle(
+                        color: AppColors.textPrimary,
+                        fontSize: r.fontMD,
+                      ),
+                      decoration: InputDecoration(
+                        hintText: 'e.g. Home, Office, Gym',
+                        hintStyle: TextStyle(
+                          color: AppColors.textMuted,
+                          fontSize: r.fontMD,
+                        ),
+                        border: InputBorder.none,
+                        isDense: true,
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                    ),
+                  ),
+
+                  SizedBox(height: r.spaceMD),
+
+                  // Address label
+                  Text(
+                    'ADDRESS',
+                    style: TextStyle(
+                      color: AppColors.textDisabled,
+                      fontSize: r.fontXS,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 1.5,
+                    ),
+                  ),
+
+                  SizedBox(height: r.spaceSM),
+
+                  // Address field
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: r.spaceMD,
+                      vertical: r.spaceSM,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.surfaceAlt,
+                      borderRadius:
+                      BorderRadius.circular(r.radiusLG),
+                      border: Border.all(color: AppColors.border),
+                    ),
+                    child: TextField(
+                      controller: addressController,
+                      style: TextStyle(
+                        color: AppColors.textPrimary,
+                        fontSize: r.fontMD,
+                      ),
+                      decoration: InputDecoration(
+                        hintText: 'e.g. Ayala Avenue, Makati',
+                        hintStyle: TextStyle(
+                          color: AppColors.textMuted,
+                          fontSize: r.fontMD,
+                        ),
+                        border: InputBorder.none,
+                        isDense: true,
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                    ),
+                  ),
+
+                  SizedBox(height: r.spaceLG),
+
+                  // Save button
+                  GestureDetector(
+                    onTap: () {
+                      if (nameController.text.isNotEmpty &&
+                          addressController.text.isNotEmpty) {
+                        setState(() {
+                          _savedPlaces.add(SavedPlace(
+                            id: DateTime.now()
+                                .millisecondsSinceEpoch
+                                .toString(),
+                            name: nameController.text,
+                            address: addressController.text,
+                            icon: _getTypeIcon(selectedType),
+                            type: selectedType,
+                          ));
+                        });
+                        Navigator.pop(context);
+                      }
+                    },
+                    child: Container(
+                      width: double.infinity,
+                      padding:
+                      EdgeInsets.symmetric(vertical: r.spaceMD),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius:
+                        BorderRadius.circular(r.radiusLG),
+                      ),
+                      child: Text(
+                        'Save Place',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: r.fontMD,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  SizedBox(height: r.spaceSM),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final r = Responsive(context);
@@ -365,6 +375,7 @@ class _SavedScreenState extends State<SavedScreen> {
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -390,12 +401,13 @@ class _SavedScreenState extends State<SavedScreen> {
 
                   // Add button
                   GestureDetector(
-                    onTap: _showAddPlaceSheet,
+                    onTap: () => _showAddPlaceSheet(context),
                     child: Container(
                       padding: EdgeInsets.all(r.spaceSM),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(r.radiusMD),
+                        borderRadius:
+                        BorderRadius.circular(r.radiusMD),
                       ),
                       child: Icon(
                         Icons.add,
@@ -461,7 +473,7 @@ class _SavedScreenState extends State<SavedScreen> {
           ),
           SizedBox(height: r.spaceLG),
           GestureDetector(
-            onTap: _showAddPlaceSheet,
+            onTap: () => _showAddPlaceSheet(context),
             child: Container(
               padding: EdgeInsets.symmetric(
                 horizontal: r.spaceLG,
@@ -474,11 +486,7 @@ class _SavedScreenState extends State<SavedScreen> {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(
-                    Icons.add,
-                    color: Colors.black,
-                    size: r.iconSM,
-                  ),
+                  Icon(Icons.add, color: Colors.black, size: r.iconSM),
                   SizedBox(width: r.spaceXS),
                   Text(
                     'Add a Place',
@@ -498,7 +506,6 @@ class _SavedScreenState extends State<SavedScreen> {
   }
 
   Widget _buildSavedList(Responsive r) {
-    // Group by type
     final homeWork = _savedPlaces
         .where((p) =>
     p.type == PlaceType.home || p.type == PlaceType.work)
@@ -513,7 +520,7 @@ class _SavedScreenState extends State<SavedScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
 
-          // Home & Work section
+          // Home & Work
           if (homeWork.isNotEmpty) ...[
             Text(
               'HOME & WORK',
@@ -528,28 +535,26 @@ class _SavedScreenState extends State<SavedScreen> {
             ...homeWork.map((place) => _SavedPlaceTile(
               place: place,
               color: _getTypeColor(place.type),
-              onDelete: () => _deletePlace(place.id),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  PageRouteBuilder(
-                    pageBuilder: (_, __, ___) =>
-                    const SearchScreen(),
-                    transitionsBuilder:
-                        (_, animation, __, child) =>
-                        FadeTransition(
-                          opacity: animation,
-                          child: child,
-                        ),
-                  ),
-                );
-              },
               r: r,
+              onDelete: () => _deletePlace(place.id),
+              onTap: () => Navigator.push(
+                context,
+                PageRouteBuilder(
+                  pageBuilder: (_, __, ___) =>
+                  const SearchScreen(),
+                  transitionsBuilder:
+                      (_, animation, __, child) =>
+                      FadeTransition(
+                        opacity: animation,
+                        child: child,
+                      ),
+                ),
+              ),
             )),
             SizedBox(height: r.spaceLG),
           ],
 
-          // Favorites section
+          // Favorites
           if (favorites.isNotEmpty) ...[
             Text(
               'FAVORITES',
@@ -564,23 +569,21 @@ class _SavedScreenState extends State<SavedScreen> {
             ...favorites.map((place) => _SavedPlaceTile(
               place: place,
               color: _getTypeColor(place.type),
-              onDelete: () => _deletePlace(place.id),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  PageRouteBuilder(
-                    pageBuilder: (_, __, ___) =>
-                    const SearchScreen(),
-                    transitionsBuilder:
-                        (_, animation, __, child) =>
-                        FadeTransition(
-                          opacity: animation,
-                          child: child,
-                        ),
-                  ),
-                );
-              },
               r: r,
+              onDelete: () => _deletePlace(place.id),
+              onTap: () => Navigator.push(
+                context,
+                PageRouteBuilder(
+                  pageBuilder: (_, __, ___) =>
+                  const SearchScreen(),
+                  transitionsBuilder:
+                      (_, animation, __, child) =>
+                      FadeTransition(
+                        opacity: animation,
+                        child: child,
+                      ),
+                ),
+              ),
             )),
           ],
 
@@ -591,19 +594,21 @@ class _SavedScreenState extends State<SavedScreen> {
   }
 }
 
+// ─── Widgets ──────────────────────────────────────────
+
 class _SavedPlaceTile extends StatelessWidget {
   final SavedPlace place;
   final Color color;
+  final Responsive r;
   final VoidCallback onDelete;
   final VoidCallback onTap;
-  final Responsive r;
 
   const _SavedPlaceTile({
     required this.place,
     required this.color,
+    required this.r,
     required this.onDelete,
     required this.onTap,
-    required this.r,
   });
 
   @override
@@ -629,11 +634,7 @@ class _SavedPlaceTile extends StatelessWidget {
                 borderRadius: BorderRadius.circular(r.radiusMD),
                 border: Border.all(color: color.withOpacity(0.3)),
               ),
-              child: Icon(
-                place.icon,
-                color: color,
-                size: r.iconMD,
-              ),
+              child: Icon(place.icon, color: color, size: r.iconMD),
             ),
 
             SizedBox(width: r.spaceMD),
@@ -667,109 +668,7 @@ class _SavedPlaceTile extends StatelessWidget {
 
             // Delete button
             GestureDetector(
-              onTap: () {
-                showDialog(
-                  context: context,
-                  builder: (context) => Dialog(
-                    backgroundColor: AppColors.surface,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(r.radiusXL),
-                    ),
-                    child: Padding(
-                      padding: EdgeInsets.all(r.spaceLG),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Remove Place?',
-                            style: TextStyle(
-                              color: AppColors.textPrimary,
-                              fontSize: r.fontXL,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                          SizedBox(height: r.spaceXS),
-                          Text(
-                            'Remove "${place.name}" from saved places?',
-                            style: TextStyle(
-                              color: AppColors.textSecondary,
-                              fontSize: r.fontMD,
-                            ),
-                          ),
-                          SizedBox(height: r.spaceLG),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: GestureDetector(
-                                  onTap: () =>
-                                      Navigator.pop(context),
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(
-                                      vertical: r.spaceMD,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: AppColors.surfaceAlt,
-                                      borderRadius:
-                                      BorderRadius.circular(
-                                          r.radiusLG),
-                                      border: Border.all(
-                                          color: AppColors.border),
-                                    ),
-                                    child: Text(
-                                      'Cancel',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        color: AppColors.textPrimary,
-                                        fontSize: r.fontMD,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(width: r.spaceSM),
-                              Expanded(
-                                child: GestureDetector(
-                                  onTap: () {
-                                    Navigator.pop(context);
-                                    onDelete();
-                                  },
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(
-                                      vertical: r.spaceMD,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: Colors.red
-                                          .withOpacity(0.15),
-                                      borderRadius:
-                                      BorderRadius.circular(
-                                          r.radiusLG),
-                                      border: Border.all(
-                                        color: Colors.red
-                                            .withOpacity(0.3),
-                                      ),
-                                    ),
-                                    child: Text(
-                                      'Remove',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        color: Colors.red,
-                                        fontSize: r.fontMD,
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              },
+              onTap: () => _confirmDelete(context),
               child: Container(
                 padding: EdgeInsets.all(r.spaceXS),
                 decoration: BoxDecoration(
@@ -789,9 +688,106 @@ class _SavedPlaceTile extends StatelessWidget {
       ),
     );
   }
+
+  void _confirmDelete(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (_) => Dialog(
+        backgroundColor: AppColors.surface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(r.radiusXL),
+        ),
+        child: Padding(
+          padding: EdgeInsets.all(r.spaceLG),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Remove Place?',
+                style: TextStyle(
+                  color: AppColors.textPrimary,
+                  fontSize: r.fontXL,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              SizedBox(height: r.spaceXS),
+              Text(
+                'Remove "${place.name}" from saved places?',
+                style: TextStyle(
+                  color: AppColors.textSecondary,
+                  fontSize: r.fontMD,
+                ),
+              ),
+              SizedBox(height: r.spaceLG),
+              Row(
+                children: [
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () => Navigator.pop(context),
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                            vertical: r.spaceMD),
+                        decoration: BoxDecoration(
+                          color: AppColors.surfaceAlt,
+                          borderRadius:
+                          BorderRadius.circular(r.radiusLG),
+                          border:
+                          Border.all(color: AppColors.border),
+                        ),
+                        child: Text(
+                          'Cancel',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: AppColors.textPrimary,
+                            fontSize: r.fontMD,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: r.spaceSM),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
+                        onDelete();
+                      },
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                            vertical: r.spaceMD),
+                        decoration: BoxDecoration(
+                          color: Colors.red.withOpacity(0.15),
+                          borderRadius:
+                          BorderRadius.circular(r.radiusLG),
+                          border: Border.all(
+                              color: Colors.red.withOpacity(0.3)),
+                        ),
+                        child: Text(
+                          'Remove',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.red,
+                            fontSize: r.fontMD,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
 
-// Models
+// ─── Models ───────────────────────────────────────────
+
 enum PlaceType { home, work, favorite }
 
 class SavedPlace {
