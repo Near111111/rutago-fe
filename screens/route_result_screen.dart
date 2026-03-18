@@ -3,6 +3,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:ruta_go/theme/app_theme.dart';
 import 'package:ruta_go/utils/responsive.dart';
+import 'package:ruta_go/screens/navigation_screen.dart';
 
 class RouteResultScreen extends StatefulWidget {
   final String origin;
@@ -21,7 +22,6 @@ class RouteResultScreen extends StatefulWidget {
 class _RouteResultScreenState extends State<RouteResultScreen> {
   final MapController _mapController = MapController();
 
-  // Mock route points — Manila to BGC
   final List<LatLng> _routePoints = [
     LatLng(14.5995, 120.9842),
     LatLng(14.6050, 120.9900),
@@ -31,7 +31,6 @@ class _RouteResultScreenState extends State<RouteResultScreen> {
     LatLng(14.5350, 121.0200),
   ];
 
-  // Mock commute steps
   final List<CommuteStep> _steps = [
     CommuteStep(
       type: TransportType.walk,
@@ -80,78 +79,69 @@ class _RouteResultScreenState extends State<RouteResultScreen> {
       body: Stack(
         children: [
 
-          // Map
-          FlutterMap(
-            mapController: _mapController,
-            options: MapOptions(
-              initialCenter: LatLng(14.5750, 121.0100),
-              initialZoom: 13,
-            ),
-            children: [
-              TileLayer(
-                urlTemplate:
-                'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-                subdomains: const ['a', 'b', 'c', 'd'],
-                userAgentPackageName: 'com.example.ruta_go',
+          // Map — top 45% of screen
+          SizedBox(
+            height: r.screenHeight * 0.45,
+            child: FlutterMap(
+              mapController: _mapController,
+              options: MapOptions(
+                initialCenter: LatLng(14.5750, 121.0100),
+                initialZoom: 13,
               ),
-
-              // Route polyline
-              PolylineLayer(
-                polylines: [
-                  Polyline(
-                    points: _routePoints,
-                    strokeWidth: 4,
-                    color: Colors.white,
-                  ),
-                ],
-              ),
-
-              // Start + End markers
-              MarkerLayer(
-                markers: [
-                  // Origin marker
-                  Marker(
-                    point: _routePoints.first,
-                    width: 40,
-                    height: 40,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: AppColors.background,
-                          width: 3,
+              children: [
+                TileLayer(
+                  urlTemplate:
+                  'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+                  subdomains: const ['a', 'b', 'c', 'd'],
+                  userAgentPackageName: 'com.example.ruta_go',
+                ),
+                PolylineLayer(
+                  polylines: [
+                    Polyline(
+                      points: _routePoints,
+                      strokeWidth: r.screenWidth * 0.01,
+                      color: Colors.white,
+                    ),
+                  ],
+                ),
+                MarkerLayer(
+                  markers: [
+                    Marker(
+                      point: _routePoints.first,
+                      width: r.screenWidth * 0.1,
+                      height: r.screenWidth * 0.1,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: AppColors.background,
+                            width: 3,
+                          ),
                         ),
                       ),
-                      child: const Icon(
-                        Icons.circle,
-                        color: AppColors.background,
-                        size: 12,
+                    ),
+                    Marker(
+                      point: _routePoints.last,
+                      width: r.screenWidth * 0.1,
+                      height: r.screenWidth * 0.1,
+                      child: Container(
+                        padding: EdgeInsets.all(r.spaceXS * 0.5),
+                        decoration: const BoxDecoration(
+                          color: AppColors.orange,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Icons.location_on,
+                          color: Colors.white,
+                          size: r.iconSM,
+                        ),
                       ),
                     ),
-                  ),
-
-                  // Destination marker
-                  Marker(
-                    point: _routePoints.last,
-                    width: 40,
-                    height: 40,
-                    child: Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: const BoxDecoration(
-                        color: AppColors.orange,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.location_on,
-                        color: Colors.white,
-                        size: 16,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            ),
           ),
 
           // Back button
@@ -166,6 +156,12 @@ class _RouteResultScreenState extends State<RouteResultScreen> {
                   color: AppColors.surface,
                   borderRadius: BorderRadius.circular(r.radiusMD),
                   border: Border.all(color: AppColors.border),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.3),
+                      blurRadius: 8,
+                    ),
+                  ],
                 ),
                 child: Icon(
                   Icons.arrow_back,
@@ -177,169 +173,195 @@ class _RouteResultScreenState extends State<RouteResultScreen> {
           ),
 
           // Bottom sheet
-          DraggableScrollableSheet(
-            initialChildSize: 0.45,
-            minChildSize: 0.15,
-            maxChildSize: 0.85,
-            builder: (context, scrollController) {
-              return Container(
-                decoration: const BoxDecoration(
-                  color: AppColors.background,
-                  borderRadius: BorderRadius.vertical(
-                    top: Radius.circular(24),
-                  ),
-                  border: Border(
-                    top: BorderSide(color: AppColors.borderAlt),
-                  ),
+          Positioned(
+            top: r.screenHeight * 0.40,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Container(
+              decoration: const BoxDecoration(
+                color: AppColors.background,
+                borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(24),
                 ),
-                child: ListView(
-                  controller: scrollController,
-                  padding: EdgeInsets.symmetric(horizontal: r.spaceMD),
-                  children: [
+                border: Border(
+                  top: BorderSide(color: AppColors.borderAlt),
+                ),
+              ),
+              child: Column(
+                children: [
 
-                    // Drag handle
-                    Center(
-                      child: Container(
-                        margin: EdgeInsets.symmetric(vertical: r.spaceSM),
-                        width: 36,
-                        height: 4,
-                        decoration: BoxDecoration(
-                          color: AppColors.border,
-                          borderRadius: BorderRadius.circular(999),
-                        ),
+                  // Drag handle
+                  Center(
+                    child: Container(
+                      margin: EdgeInsets.symmetric(vertical: r.spaceSM),
+                      width: r.screenWidth * 0.1,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: AppColors.border,
+                        borderRadius: BorderRadius.circular(999),
                       ),
                     ),
+                  ),
 
-                    // Origin → Destination header
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                  // Scrollable content
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: EdgeInsets.symmetric(horizontal: r.spaceMD),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+
+                          // Origin → Destination
+                          Row(
                             children: [
-                              Text(
-                                widget.origin,
-                                style: TextStyle(
-                                  color: AppColors.textSecondary,
-                                  fontSize: r.fontSM,
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      widget.origin,
+                                      style: TextStyle(
+                                        color: AppColors.textSecondary,
+                                        fontSize: r.fontSM,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    SizedBox(height: r.spaceXS * 0.5),
+                                    Text(
+                                      widget.destination,
+                                      style: TextStyle(
+                                        color: AppColors.textPrimary,
+                                        fontSize: r.fontXL,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
                                 ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              SizedBox(height: r.spaceXS * 0.5),
-                              Text(
-                                widget.destination,
-                                style: TextStyle(
-                                  color: AppColors.textPrimary,
-                                  fontSize: r.fontLG,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
                               ),
                             ],
                           ),
-                        ),
-                      ],
-                    ),
 
-                    SizedBox(height: r.spaceMD),
+                          SizedBox(height: r.spaceMD),
 
-                    // Summary cards
-                    Row(
-                      children: [
-                        _SummaryCard(
-                          icon: Icons.access_time,
-                          label: 'Total Time',
-                          value: '38 mins',
-                          r: r,
-                        ),
-                        SizedBox(width: r.spaceSM),
-                        _SummaryCard(
-                          icon: Icons.route,
-                          label: 'Distance',
-                          value: '11.0 km',
-                          r: r,
-                        ),
-                        SizedBox(width: r.spaceSM),
-                        _SummaryCard(
-                          icon: Icons.payments_outlined,
-                          label: 'Est. Fare',
-                          value: '₱58',
-                          r: r,
-                        ),
-                      ],
-                    ),
+                          // Summary cards
+                          Row(
+                            children: [
+                              _SummaryCard(
+                                icon: Icons.access_time,
+                                label: 'Total Time',
+                                value: '38 mins',
+                                r: r,
+                              ),
+                              SizedBox(width: r.spaceSM),
+                              _SummaryCard(
+                                icon: Icons.route,
+                                label: 'Distance',
+                                value: '11.0 km',
+                                r: r,
+                              ),
+                              SizedBox(width: r.spaceSM),
+                              _SummaryCard(
+                                icon: Icons.payments_outlined,
+                                label: 'Est. Fare',
+                                value: '₱58',
+                                r: r,
+                              ),
+                            ],
+                          ),
 
-                    SizedBox(height: r.spaceLG),
+                          SizedBox(height: r.spaceLG),
 
-                    // Steps label
-                    Text(
-                      'ROUTE STEPS',
-                      style: TextStyle(
-                        color: AppColors.textDisabled,
-                        fontSize: r.fontXS,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 1.5,
-                      ),
-                    ),
-
-                    SizedBox(height: r.spaceSM),
-
-                    // Commute steps
-                    ..._steps.asMap().entries.map((entry) {
-                      final index = entry.key;
-                      final step = entry.value;
-                      return _CommuteStepTile(
-                        step: step,
-                        isLast: index == _steps.length - 1,
-                        r: r,
-                      );
-                    }),
-
-                    SizedBox(height: r.spaceLG),
-
-                    // Start Navigation button
-                    GestureDetector(
-                      onTap: () {
-                        // TODO: Navigate to Navigation Screen
-                      },
-                      child: Container(
-                        width: double.infinity,
-                        padding: EdgeInsets.symmetric(
-                          vertical: r.spaceMD,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(r.radiusLG),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.navigation,
-                              color: Colors.black,
-                              size: r.iconMD,
+                          // Route steps label
+                          Text(
+                            'ROUTE STEPS',
+                            style: TextStyle(
+                              color: AppColors.textDisabled,
+                              fontSize: r.fontXS,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 1.5,
                             ),
-                            SizedBox(width: r.spaceXS),
-                            Text(
-                              'Start Navigation',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: r.fontLG,
-                                fontWeight: FontWeight.w700,
+                          ),
+
+                          SizedBox(height: r.spaceSM),
+
+                          // Steps
+                          ..._steps.asMap().entries.map((entry) {
+                            return _CommuteStepTile(
+                              step: entry.value,
+                              isLast: entry.key == _steps.length - 1,
+                              r: r,
+                            );
+                          }),
+
+                          SizedBox(height: r.spaceLG),
+
+                          // Start Navigation button
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                PageRouteBuilder(
+                                  pageBuilder: (_, __, ___) =>
+                                      NavigationScreen(
+                                        origin: widget.origin,
+                                        destination: widget.destination,
+                                      ),
+                                  transitionsBuilder:
+                                      (_, animation, __, child) =>
+                                      FadeTransition(
+                                        opacity: animation,
+                                        child: child,
+                                      ),
+                                  transitionDuration:
+                                  const Duration(milliseconds: 400),
+                                ),
+                              );
+                            },
+                            child: Container(
+                              width: double.infinity,
+                              padding: EdgeInsets.symmetric(
+                                vertical: r.spaceMD,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius:
+                                BorderRadius.circular(r.radiusLG),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.navigation,
+                                    color: Colors.black,
+                                    size: r.iconMD,
+                                  ),
+                                  SizedBox(width: r.spaceXS),
+                                  Text(
+                                    'Start Navigation',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: r.fontLG,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+
+                          SizedBox(height: r.spaceLG),
+                        ],
                       ),
                     ),
-
-                    SizedBox(height: r.spaceLG),
-                  ],
-                ),
-              );
-            },
+                  ),
+                ],
+              ),
+            ),
           ),
         ],
       ),
@@ -347,7 +369,6 @@ class _RouteResultScreenState extends State<RouteResultScreen> {
   }
 }
 
-// Summary card widget
 class _SummaryCard extends StatelessWidget {
   final IconData icon;
   final String label;
@@ -374,7 +395,11 @@ class _SummaryCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(icon, color: AppColors.textSecondary, size: r.iconSM),
+            Icon(
+              icon,
+              color: AppColors.textSecondary,
+              size: r.iconSM,
+            ),
             SizedBox(height: r.spaceXS),
             Text(
               value,
@@ -398,7 +423,6 @@ class _SummaryCard extends StatelessWidget {
   }
 }
 
-// Commute step tile widget
 class _CommuteStepTile extends StatelessWidget {
   final CommuteStep step;
   final bool isLast;
@@ -451,8 +475,8 @@ class _CommuteStepTile extends StatelessWidget {
           Column(
             children: [
               Container(
-                width: 36,
-                height: 36,
+                width: r.screenWidth * 0.09,
+                height: r.screenWidth * 0.09,
                 decoration: BoxDecoration(
                   color: _color.withOpacity(0.15),
                   shape: BoxShape.circle,
@@ -464,7 +488,8 @@ class _CommuteStepTile extends StatelessWidget {
                 Expanded(
                   child: Container(
                     width: 1,
-                    margin: EdgeInsets.symmetric(vertical: r.spaceXS * 0.5),
+                    margin: EdgeInsets.symmetric(
+                        vertical: r.spaceXS * 0.5),
                     color: AppColors.border,
                   ),
                 ),
@@ -476,7 +501,8 @@ class _CommuteStepTile extends StatelessWidget {
           // Step details
           Expanded(
             child: Padding(
-              padding: EdgeInsets.only(bottom: isLast ? 0 : r.spaceMD),
+              padding:
+              EdgeInsets.only(bottom: isLast ? 0 : r.spaceMD),
               child: Container(
                 padding: EdgeInsets.all(r.spaceSM),
                 decoration: BoxDecoration(
@@ -487,7 +513,6 @@ class _CommuteStepTile extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Instruction
                     Text(
                       step.instruction,
                       style: TextStyle(
@@ -497,8 +522,6 @@ class _CommuteStepTile extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: r.spaceXS * 0.5),
-
-                    // From → To
                     Row(
                       children: [
                         Icon(
@@ -542,10 +565,7 @@ class _CommuteStepTile extends StatelessWidget {
                         ),
                       ],
                     ),
-
                     SizedBox(height: r.spaceXS),
-
-                    // Duration + Distance + Fare
                     Row(
                       children: [
                         _StepChip(
@@ -617,14 +637,18 @@ class _StepChip extends StatelessWidget {
         children: [
           Icon(
             icon,
-            color: highlight ? AppColors.orange : AppColors.textSecondary,
+            color: highlight
+                ? AppColors.orange
+                : AppColors.textSecondary,
             size: r.iconSM * 0.75,
           ),
           SizedBox(width: r.spaceXS * 0.5),
           Text(
             label,
             style: TextStyle(
-              color: highlight ? AppColors.orange : AppColors.textSecondary,
+              color: highlight
+                  ? AppColors.orange
+                  : AppColors.textSecondary,
               fontSize: r.fontXS,
               fontWeight: FontWeight.w500,
             ),
@@ -635,7 +659,6 @@ class _StepChip extends StatelessWidget {
   }
 }
 
-// Models
 enum TransportType { walk, mrt, lrt, jeep, bus }
 
 class CommuteStep {
