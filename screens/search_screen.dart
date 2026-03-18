@@ -160,7 +160,7 @@ class _SearchScreenState extends State<SearchScreen>
             ),
           ),
           const Text(
-            'Maghanap ng Ruta',
+            'Find a Route',
             style: TextStyle(
               color: Colors.white,
               fontSize: 18,
@@ -220,7 +220,7 @@ class _SearchScreenState extends State<SearchScreen>
                         fontSize: 14,
                       ),
                       decoration: const InputDecoration(
-                        hintText: 'Saan ka galing?',
+                        hintText: 'Where are you from?',
                         hintStyle: TextStyle(
                           color: Color(0xFF555555),
                           fontSize: 14,
@@ -295,7 +295,7 @@ class _SearchScreenState extends State<SearchScreen>
                         fontSize: 14,
                       ),
                       decoration: const InputDecoration(
-                        hintText: 'Saan ka pupunta?',
+                        hintText: 'Where are you going?',
                         hintStyle: TextStyle(
                           color: Color(0xFF555555),
                           fontSize: 14,
@@ -454,7 +454,7 @@ class _SearchScreenState extends State<SearchScreen>
               ),
               const SizedBox(width: 10),
               Text(
-                'Hanapin ang Ruta',
+                'Find Route',
                 style: TextStyle(
                   color: _canSearch
                       ? Colors.black

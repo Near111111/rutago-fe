@@ -238,7 +238,7 @@ class _HomeTabState extends State<_HomeTab> {
                     ),
                     SizedBox(width: 8),
                     Text(
-                      'Hinahanap ang lokasyon mo...',
+                      'Getting your location...',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 12,
@@ -369,7 +369,7 @@ class _HomeTabState extends State<_HomeTab> {
                           ),
                           const SizedBox(width: 12),
                           const Text(
-                            'Saan ka pupunta?',
+                            'Where are you going?',
                             style: TextStyle(
                               color: Color(0xFF666666),
                               fontSize: 15,
