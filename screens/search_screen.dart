@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import 'package:ruta_go/screens/route_result_screen.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -424,7 +425,27 @@ class _SearchScreenState extends State<SearchScreen>
       child: GestureDetector(
         onTap: _canSearch
             ? () {
-          // TODO: Navigate to Route Result Screen
+          Navigator.push(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (_, __, ___) => RouteResultScreen(
+                origin: _fromController.text,
+                destination: _toController.text,
+              ),
+              transitionsBuilder: (_, animation, __, child) =>
+                  SlideTransition(
+                    position: Tween<Offset>(
+                      begin: const Offset(0, 1),
+                      end: Offset.zero,
+                    ).animate(CurvedAnimation(
+                      parent: animation,
+                      curve: Curves.easeOutCubic,
+                    )),
+                    child: child,
+                  ),
+              transitionDuration: const Duration(milliseconds: 400),
+            ),
+          );
         }
             : null,
         child: AnimatedContainer(
