@@ -4,6 +4,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:ruta_go/screens/search_screen.dart';
 import 'package:ruta_go/screens/saved_screen.dart';
+import 'package:ruta_go/screens/settings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -18,8 +19,8 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<Widget> _screens = const [
     _HomeTab(),
     Center(child: Text('Search', style: TextStyle(color: Colors.white))),
-    SavedScreen(), // ← updated
-    Center(child: Text('Settings', style: TextStyle(color: Colors.white))),
+    SavedScreen(),
+    SettingsScreen(), // ← updated
   ];
 
   @override
