@@ -76,108 +76,112 @@ class _RouteResultScreenState extends State<RouteResultScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: Stack(
+      body: Column(
         children: [
 
-          // Map — top 45% of screen
+          // Map — top 45%
           SizedBox(
             height: r.screenHeight * 0.45,
-            child: FlutterMap(
-              mapController: _mapController,
-              options: MapOptions(
-                initialCenter: LatLng(14.5750, 121.0100),
-                initialZoom: 13,
-              ),
+            child: Stack(
               children: [
-                TileLayer(
-                  urlTemplate:
-                  'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-                  subdomains: const ['a', 'b', 'c', 'd'],
-                  userAgentPackageName: 'com.example.ruta_go',
-                ),
-                PolylineLayer(
-                  polylines: [
-                    Polyline(
-                      points: _routePoints,
-                      strokeWidth: r.screenWidth * 0.01,
-                      color: Colors.white,
+
+                // Flutter Map
+                FlutterMap(
+                  mapController: _mapController,
+                  options: MapOptions(
+                    initialCenter: LatLng(14.5750, 121.0100),
+                    initialZoom: 13,
+                  ),
+                  children: [
+                    TileLayer(
+                      urlTemplate:
+                      'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+                      subdomains: const ['a', 'b', 'c', 'd'],
+                      userAgentPackageName: 'com.example.ruta_go',
                     ),
-                  ],
-                ),
-                MarkerLayer(
-                  markers: [
-                    Marker(
-                      point: _routePoints.first,
-                      width: r.screenWidth * 0.1,
-                      height: r.screenWidth * 0.1,
-                      child: Container(
-                        decoration: BoxDecoration(
+                    PolylineLayer(
+                      polylines: [
+                        Polyline(
+                          points: _routePoints,
+                          strokeWidth: r.screenWidth * 0.01,
                           color: Colors.white,
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: AppColors.background,
-                            width: 3,
+                        ),
+                      ],
+                    ),
+                    MarkerLayer(
+                      markers: [
+                        // Origin marker
+                        Marker(
+                          point: _routePoints.first,
+                          width: r.screenWidth * 0.1,
+                          height: r.screenWidth * 0.1,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: AppColors.background,
+                                width: 3,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                    Marker(
-                      point: _routePoints.last,
-                      width: r.screenWidth * 0.1,
-                      height: r.screenWidth * 0.1,
-                      child: Container(
-                        padding: EdgeInsets.all(r.spaceXS * 0.5),
-                        decoration: const BoxDecoration(
-                          color: AppColors.orange,
-                          shape: BoxShape.circle,
+                        // Destination marker
+                        Marker(
+                          point: _routePoints.last,
+                          width: r.screenWidth * 0.1,
+                          height: r.screenWidth * 0.1,
+                          child: Container(
+                            padding: EdgeInsets.all(r.spaceXS * 0.5),
+                            decoration: const BoxDecoration(
+                              color: AppColors.orange,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.location_on,
+                              color: Colors.white,
+                              size: r.iconSM,
+                            ),
+                          ),
                         ),
-                        child: Icon(
-                          Icons.location_on,
-                          color: Colors.white,
-                          size: r.iconSM,
-                        ),
-                      ),
+                      ],
                     ),
                   ],
+                ),
+
+                // Back button
+                Positioned(
+                  top: r.screenHeight * 0.06,
+                  left: r.spaceMD,
+                  child: GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: Container(
+                      padding: EdgeInsets.all(r.spaceSM),
+                      decoration: BoxDecoration(
+                        color: AppColors.surface,
+                        borderRadius: BorderRadius.circular(r.radiusMD),
+                        border: Border.all(color: AppColors.border),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.3),
+                            blurRadius: 8,
+                          ),
+                        ],
+                      ),
+                      child: Icon(
+                        Icons.arrow_back,
+                        color: Colors.white,
+                        size: r.iconMD,
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),
           ),
 
-          // Back button
-          Positioned(
-            top: r.screenHeight * 0.06,
-            left: r.spaceMD,
-            child: GestureDetector(
-              onTap: () => Navigator.pop(context),
-              child: Container(
-                padding: EdgeInsets.all(r.spaceSM),
-                decoration: BoxDecoration(
-                  color: AppColors.surface,
-                  borderRadius: BorderRadius.circular(r.radiusMD),
-                  border: Border.all(color: AppColors.border),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.3),
-                      blurRadius: 8,
-                    ),
-                  ],
-                ),
-                child: Icon(
-                  Icons.arrow_back,
-                  color: Colors.white,
-                  size: r.iconMD,
-                ),
-              ),
-            ),
-          ),
-
-          // Bottom sheet
-          Positioned(
-            top: r.screenHeight * 0.40,
-            left: 0,
-            right: 0,
-            bottom: 0,
+          // Bottom sheet — remaining 55%
+          Expanded(
             child: Container(
               decoration: const BoxDecoration(
                 color: AppColors.background,
@@ -207,12 +211,13 @@ class _RouteResultScreenState extends State<RouteResultScreen> {
                   // Scrollable content
                   Expanded(
                     child: SingleChildScrollView(
-                      padding: EdgeInsets.symmetric(horizontal: r.spaceMD),
+                      padding:
+                      EdgeInsets.symmetric(horizontal: r.spaceMD),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
 
-                          // Origin → Destination
+                          // Origin → Destination header
                           Row(
                             children: [
                               Expanded(
@@ -289,7 +294,7 @@ class _RouteResultScreenState extends State<RouteResultScreen> {
 
                           SizedBox(height: r.spaceSM),
 
-                          // Steps
+                          // Commute steps
                           ..._steps.asMap().entries.map((entry) {
                             return _CommuteStepTile(
                               step: entry.value,
@@ -333,7 +338,8 @@ class _RouteResultScreenState extends State<RouteResultScreen> {
                                 BorderRadius.circular(r.radiusLG),
                               ),
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisAlignment:
+                                MainAxisAlignment.center,
                                 children: [
                                   Icon(
                                     Icons.navigation,
@@ -369,6 +375,8 @@ class _RouteResultScreenState extends State<RouteResultScreen> {
   }
 }
 
+// ─── Widgets ───────────────────────────────────────────
+
 class _SummaryCard extends StatelessWidget {
   final IconData icon;
   final String label;
@@ -395,11 +403,7 @@ class _SummaryCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(
-              icon,
-              color: AppColors.textSecondary,
-              size: r.iconSM,
-            ),
+            Icon(icon, color: AppColors.textSecondary, size: r.iconSM),
             SizedBox(height: r.spaceXS),
             Text(
               value,
@@ -471,7 +475,7 @@ class _CommuteStepTile extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
 
-          // Timeline
+          // Timeline column
           Column(
             children: [
               Container(
@@ -488,8 +492,8 @@ class _CommuteStepTile extends StatelessWidget {
                 Expanded(
                   child: Container(
                     width: 1,
-                    margin: EdgeInsets.symmetric(
-                        vertical: r.spaceXS * 0.5),
+                    margin:
+                    EdgeInsets.symmetric(vertical: r.spaceXS * 0.5),
                     color: AppColors.border,
                   ),
                 ),
@@ -498,7 +502,7 @@ class _CommuteStepTile extends StatelessWidget {
 
           SizedBox(width: r.spaceSM),
 
-          // Step details
+          // Step detail card
           Expanded(
             child: Padding(
               padding:
@@ -513,6 +517,8 @@ class _CommuteStepTile extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+
+                    // Instruction
                     Text(
                       step.instruction,
                       style: TextStyle(
@@ -521,7 +527,10 @@ class _CommuteStepTile extends StatelessWidget {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
+
                     SizedBox(height: r.spaceXS * 0.5),
+
+                    // From
                     Row(
                       children: [
                         Icon(
@@ -543,7 +552,10 @@ class _CommuteStepTile extends StatelessWidget {
                         ),
                       ],
                     ),
+
                     SizedBox(height: r.spaceXS * 0.25),
+
+                    // To
                     Row(
                       children: [
                         Icon(
@@ -565,7 +577,10 @@ class _CommuteStepTile extends StatelessWidget {
                         ),
                       ],
                     ),
+
                     SizedBox(height: r.spaceXS),
+
+                    // Chips
                     Row(
                       children: [
                         _StepChip(
@@ -658,6 +673,8 @@ class _StepChip extends StatelessWidget {
     );
   }
 }
+
+// ─── Models ───────────────────────────────────────────
 
 enum TransportType { walk, mrt, lrt, jeep, bus }
 
