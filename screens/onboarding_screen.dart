@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:ruta_go/screens/home_screen.dart';
+import 'package:ruta_go/theme/app_theme.dart';
+import 'package:ruta_go/utils/responsive.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -18,19 +20,22 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     OnboardData(
       animation: 'assets/animations/onboard_1.json',
       title: 'Hanapin ang\nIyong Ruta',
-      subtitle: 'I-type lang ang iyong destinasyon\nat hahanapin namin ang pinakamadaling daan.',
+      subtitle:
+      'I-type lang ang iyong destinasyon at hahanapin namin ang pinakamadaling daan.',
       tag: '01 — Navigate',
     ),
     OnboardData(
       animation: 'assets/animations/onboard_2.json',
       title: 'Alamin ang\nSasakyan',
-      subtitle: 'MRT, LRT, bus, o jeep —\naabisuhan ka namin kung alin ang sasakyan mo.',
+      subtitle:
+      'MRT, LRT, bus, o jeep — aabisuhan ka namin kung alin ang sasakyan mo.',
       tag: '02 — Commute',
     ),
     OnboardData(
       animation: 'assets/animations/onboard_3.json',
       title: 'Aabisuhan\nKa Namin',
-      subtitle: 'Hindi ka maliligaw —\nmagrereceive ka ng alerto bago mo pang maabot ang iyong hintuan.',
+      subtitle:
+      'Hindi ka maliligaw — magrereceive ka ng alerto bago mo pang maabot ang iyong hintuan.',
       tag: '03 — Alerts',
     ),
   ];
@@ -50,11 +55,9 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     Navigator.pushReplacement(
       context,
       PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) =>
-        const HomeScreen(),
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          return FadeTransition(opacity: animation, child: child);
-        },
+        pageBuilder: (_, __, ___) => const HomeScreen(),
+        transitionsBuilder: (_, animation, __, child) =>
+            FadeTransition(opacity: animation, child: child),
         transitionDuration: const Duration(milliseconds: 600),
       ),
     );
@@ -68,49 +71,42 @@ class _OnboardingScreenState extends State<OnboardingScreen>
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
+    final r = Responsive(context);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0A0A),
+      backgroundColor: AppColors.background,
       body: Stack(
         children: [
-
-          // Page View
           PageView.builder(
             controller: _pageController,
-            onPageChanged: (index) {
-              setState(() => _currentPage = index);
-            },
+            onPageChanged: (index) => setState(() => _currentPage = index),
             itemCount: _pages.length,
-            itemBuilder: (context, index) {
-              return _buildPage(_pages[index], size);
-            },
+            itemBuilder: (context, index) =>
+                _buildPage(_pages[index], r),
           ),
 
-          // Skip button — top right
+          // Skip button
           if (_currentPage < _pages.length - 1)
             Positioned(
-              top: 56,
-              right: 24,
+              top: r.screenHeight * 0.07,
+              right: r.spaceMD,
               child: GestureDetector(
                 onTap: _goToHome,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: r.spaceMD,
+                    vertical: r.spaceXS,
                   ),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF1A1A1A),
+                    color: AppColors.surfaceAlt,
                     borderRadius: BorderRadius.circular(999),
-                    border: Border.all(
-                      color: const Color(0xFF2A2A2A),
-                    ),
+                    border: Border.all(color: AppColors.border),
                   ),
-                  child: const Text(
+                  child: Text(
                     'Skip',
                     style: TextStyle(
-                      color: Color(0xFF888888),
-                      fontSize: 13,
+                      color: AppColors.textSecondary,
+                      fontSize: r.fontSM,
                     ),
                   ),
                 ),
@@ -119,22 +115,21 @@ class _OnboardingScreenState extends State<OnboardingScreen>
 
           // Bottom controls
           Positioned(
-            bottom: 48,
-            left: 24,
-            right: 24,
+            bottom: r.space2XL,
+            left: r.spaceMD,
+            right: r.spaceMD,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-
                 // Dot indicators
                 Row(
                   children: List.generate(
                     _pages.length,
                         (index) => AnimatedContainer(
                       duration: const Duration(milliseconds: 300),
-                      margin: const EdgeInsets.only(right: 6),
-                      width: _currentPage == index ? 24 : 6,
-                      height: 6,
+                      margin: EdgeInsets.only(right: r.spaceXS * 0.75),
+                      width: _currentPage == index ? r.spaceLG : r.spaceXS,
+                      height: r.spaceXS * 0.75,
                       decoration: BoxDecoration(
                         color: _currentPage == index
                             ? Colors.white
@@ -145,14 +140,13 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                   ),
                 ),
 
-                // Next / Get Started button
+                // Next button
                 GestureDetector(
                   onTap: _nextPage,
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 300),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 28,
-                      vertical: 16,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: r.spaceLG,
+                      vertical: r.spaceMD,
                     ),
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -164,17 +158,17 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                           _currentPage == _pages.length - 1
                               ? 'Magsimula'
                               : 'Susunod',
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: Colors.black,
-                            fontSize: 14,
+                            fontSize: r.fontMD,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        const SizedBox(width: 8),
-                        const Icon(
+                        SizedBox(width: r.spaceXS),
+                        Icon(
                           Icons.arrow_forward,
                           color: Colors.black,
-                          size: 16,
+                          size: r.iconSM,
                         ),
                       ],
                     ),
@@ -188,67 +182,70 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     );
   }
 
-  Widget _buildPage(OnboardData data, Size size) {
+  Widget _buildPage(OnboardData data, Responsive r) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
+      padding: EdgeInsets.symmetric(horizontal: r.spaceMD),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(height: size.height * 0.08),
+          SizedBox(height: r.screenHeight * 0.08),
 
           // Tag
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            padding: EdgeInsets.symmetric(
+              horizontal: r.spaceSM,
+              vertical: r.spaceXS * 0.75,
+            ),
             decoration: BoxDecoration(
-              color: const Color(0xFF1A1A1A),
+              color: AppColors.surfaceAlt,
               borderRadius: BorderRadius.circular(999),
-              border: Border.all(color: const Color(0xFF2A2A2A)),
+              border: Border.all(color: AppColors.border),
             ),
             child: Text(
               data.tag,
-              style: const TextStyle(
-                color: Color(0xFF888888),
-                fontSize: 11,
+              style: TextStyle(
+                color: AppColors.textSecondary,
+                fontSize: r.fontXS,
                 letterSpacing: 1.0,
               ),
             ),
           ),
 
-          SizedBox(height: size.height * 0.04),
+          SizedBox(height: r.screenHeight * 0.04),
 
-          // Lottie animation — centered
+          // Lottie
           Center(
             child: Lottie.asset(
               data.animation,
-              width: size.width * 0.7,
-              height: size.width * 0.7,
+              width: r.screenWidth * 0.7,
+              height: r.screenWidth * 0.7,
               fit: BoxFit.contain,
               repeat: true,
             ),
           ),
 
-          SizedBox(height: size.height * 0.05),
+          SizedBox(height: r.screenHeight * 0.05),
 
           // Title
           Text(
             data.title,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 36,
+            style: TextStyle(
+              color: AppColors.textPrimary,
+              fontSize: r.font3XL,
               fontWeight: FontWeight.w800,
               height: 1.2,
               letterSpacing: 0.5,
             ),
           ),
 
-          const SizedBox(height: 16),
+          SizedBox(height: r.spaceMD),
 
           // Subtitle
           Text(
             data.subtitle,
-            style: const TextStyle(
-              color: Color(0xFF888888),
-              fontSize: 15,
+            style: TextStyle(
+              color: AppColors.textSecondary,
+              fontSize: r.fontLG,
               height: 1.6,
             ),
           ),

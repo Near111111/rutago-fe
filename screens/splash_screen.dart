@@ -3,6 +3,8 @@ import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ruta_go/screens/home_screen.dart';
 import 'package:ruta_go/screens/onboarding_screen.dart';
+import 'package:ruta_go/theme/app_theme.dart';
+import 'package:ruta_go/utils/responsive.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -21,73 +23,66 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   void initState() {
     super.initState();
-
     _fadeController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1200),
     );
-
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _fadeController, curve: Curves.easeIn),
     );
-
     _slideController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1000),
     );
-
     _slideAnimation = Tween<Offset>(
       begin: const Offset(0, 0.3),
       end: Offset.zero,
     ).animate(
       CurvedAnimation(parent: _slideController, curve: Curves.easeOutCubic),
     );
-
     _fadeController.forward();
     Future.delayed(const Duration(milliseconds: 400), () {
-      _slideController.forward();
+      if (mounted) _slideController.forward();
     });
-
-    // Check if first time
     Future.delayed(const Duration(seconds: 4), () {
       _checkFirstTime();
     });
   }
 
-  // Check kung first time buksan ang app
   Future<void> _checkFirstTime() async {
-    final prefs = await SharedPreferences.getInstance();
-    final bool isFirstTime = prefs.getBool('is_first_time') ?? true;
-
-    if (!mounted) return;
-
-    if (isFirstTime) {
-      // First time — ipakita ang onboarding
-      await prefs.setBool('is_first_time', false);
-      Navigator.pushReplacement(
-        context,
-        PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) =>
-          const OnboardingScreen(),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(opacity: animation, child: child);
-          },
-          transitionDuration: const Duration(milliseconds: 800),
-        ),
-      );
-    } else {
-      // Bumalik na — diretso sa Home
-      Navigator.pushReplacement(
-        context,
-        PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) =>
-          const HomeScreen(),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(opacity: animation, child: child);
-          },
-          transitionDuration: const Duration(milliseconds: 800),
-        ),
-      );
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final bool isFirstTime = prefs.getBool('is_first_time') ?? true;
+      if (!mounted) return;
+      if (isFirstTime) {
+        await prefs.setBool('is_first_time', false);
+        Navigator.pushReplacement(
+          context,
+          PageRouteBuilder(
+            pageBuilder: (_, __, ___) => const OnboardingScreen(),
+            transitionsBuilder: (_, animation, __, child) =>
+                FadeTransition(opacity: animation, child: child),
+            transitionDuration: const Duration(milliseconds: 800),
+          ),
+        );
+      } else {
+        Navigator.pushReplacement(
+          context,
+          PageRouteBuilder(
+            pageBuilder: (_, __, ___) => const HomeScreen(),
+            transitionsBuilder: (_, animation, __, child) =>
+                FadeTransition(opacity: animation, child: child),
+            transitionDuration: const Duration(milliseconds: 800),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const OnboardingScreen()),
+        );
+      }
     }
   }
 
@@ -100,16 +95,16 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
+    final r = Responsive(context);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0A0A),
+      backgroundColor: AppColors.background,
       body: Stack(
         children: [
-          // Top radial glow
+          // Top glow
           Positioned(
             top: -100,
-            left: size.width / 2 - 150,
+            left: r.screenWidth / 2 - 150,
             child: Container(
               width: 300,
               height: 300,
@@ -125,7 +120,7 @@ class _SplashScreenState extends State<SplashScreen>
             ),
           ),
 
-          // Bottom radial glow
+          // Bottom glow
           Positioned(
             bottom: -80,
             right: -80,
@@ -136,7 +131,7 @@ class _SplashScreenState extends State<SplashScreen>
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    const Color(0xFFFF6D00).withOpacity(0.08),
+                    AppColors.orange.withOpacity(0.08),
                     Colors.transparent,
                   ],
                 ),
@@ -149,58 +144,58 @@ class _SplashScreenState extends State<SplashScreen>
             opacity: _fadeAnimation,
             child: Column(
               children: [
-                SizedBox(height: size.height * 0.12),
+                SizedBox(height: r.screenHeight * 0.12),
 
-                // Lottie
                 Lottie.asset(
                   'assets/animations/splash_animation.json',
-                  width: size.width * 0.75,
-                  height: size.width * 0.75,
+                  width: r.screenWidth * 0.75,
+                  height: r.screenWidth * 0.75,
                   fit: BoxFit.contain,
                   repeat: true,
                 ),
 
-                SizedBox(height: size.height * 0.04),
+                SizedBox(height: r.screenHeight * 0.04),
 
-                // Text slide animation
                 SlideTransition(
                   position: _slideAnimation,
                   child: Column(
                     children: [
-                      const Text(
+                      Text(
                         'RutaGo',
                         style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 42,
+                          color: AppColors.textPrimary,
+                          fontSize: r.font4XL,
                           fontWeight: FontWeight.w800,
                           letterSpacing: 2.0,
                         ),
                       ),
-                      const SizedBox(height: 10),
+                      SizedBox(height: r.spaceXS),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Container(
-                            width: 6, height: 6,
+                            width: r.screenWidth * 0.015,
+                            height: r.screenWidth * 0.015,
                             decoration: const BoxDecoration(
-                              color: Color(0xFFFF6D00),
+                              color: AppColors.orange,
                               shape: BoxShape.circle,
                             ),
                           ),
-                          const SizedBox(width: 8),
-                          const Text(
+                          SizedBox(width: r.spaceXS),
+                          Text(
                             'Ang daan mo, alam namin.',
                             style: TextStyle(
-                              color: Color(0xFF888888),
-                              fontSize: 14,
+                              color: AppColors.textSecondary,
+                              fontSize: r.fontMD,
                               letterSpacing: 0.8,
                             ),
                           ),
-                          const SizedBox(width: 8),
+                          SizedBox(width: r.spaceXS),
                           Container(
-                            width: 6, height: 6,
+                            width: r.screenWidth * 0.015,
+                            height: r.screenWidth * 0.015,
                             decoration: const BoxDecoration(
-                              color: Color(0xFFFF6D00),
+                              color: AppColors.orange,
                               shape: BoxShape.circle,
                             ),
                           ),
@@ -212,11 +207,10 @@ class _SplashScreenState extends State<SplashScreen>
 
                 const Spacer(),
 
-                // Progress bar
                 SlideTransition(
                   position: _slideAnimation,
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 48),
+                    padding: EdgeInsets.symmetric(horizontal: r.space2XL),
                     child: Column(
                       children: [
                         ClipRRect(
@@ -228,12 +222,12 @@ class _SplashScreenState extends State<SplashScreen>
                             minHeight: 2,
                           ),
                         ),
-                        const SizedBox(height: 16),
-                        const Text(
+                        SizedBox(height: r.spaceMD),
+                        Text(
                           'Ini-initialize ang mapa...',
                           style: TextStyle(
-                            color: Color(0xFF444444),
-                            fontSize: 12,
+                            color: AppColors.textDisabled,
+                            fontSize: r.fontSM,
                           ),
                         ),
                       ],
@@ -241,17 +235,17 @@ class _SplashScreenState extends State<SplashScreen>
                   ),
                 ),
 
-                const SizedBox(height: 32),
+                SizedBox(height: r.spaceLG),
 
                 Text(
                   'v1.0.0',
                   style: TextStyle(
                     color: Colors.white.withOpacity(0.15),
-                    fontSize: 11,
+                    fontSize: r.fontXS,
                   ),
                 ),
 
-                const SizedBox(height: 24),
+                SizedBox(height: r.spaceMD),
               ],
             ),
           ),
