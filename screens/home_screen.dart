@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:ruta_go/theme/app_theme.dart';
+import 'package:ruta_go/utils/responsive.dart';
 import 'package:ruta_go/screens/search_screen.dart';
 import 'package:ruta_go/screens/saved_screen.dart';
 import 'package:ruta_go/screens/settings_screen.dart';
+import 'package:ruta_go/screens/login_screen.dart';
+import 'package:ruta_go/screens/register_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -15,84 +19,307 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
+  bool _isLoggedIn = false;
 
-  final List<Widget> _screens = const [
-    _HomeTab(),
-    Center(child: Text('Search', style: TextStyle(color: Colors.white))),
-    SavedScreen(),
-    SettingsScreen(), // ← updated
-  ];
+  late final List<Widget> _screens;
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF0A0A0A),
-      body: _screens[_currentIndex],
-      bottomNavigationBar: _buildBottomNav(),
+  void initState() {
+    super.initState();
+    _screens = [
+      const _HomeTab(),
+      const Center(
+          child: Text('Search',
+              style: TextStyle(color: Colors.white))),
+      const SavedScreen(),
+      const SettingsScreen(),
+    ];
+  }
+
+  void _checkAuthForSaved() {
+    if (_isLoggedIn) {
+      setState(() => _currentIndex = 2);
+    } else {
+      _showLoginPrompt();
+    }
+  }
+
+  void _showLoginPrompt() {
+    final r = Responsive(context);
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (_) => Container(
+        padding: EdgeInsets.fromLTRB(
+          r.spaceMD,
+          r.spaceMD,
+          r.spaceMD,
+          r.spaceLG,
+        ),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(r.radiusXL),
+          ),
+          border: const Border(
+            top: BorderSide(color: AppColors.borderAlt),
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+
+            // Handle
+            Center(
+              child: Container(
+                width: r.screenWidth * 0.1,
+                height: 4,
+                margin: EdgeInsets.only(bottom: r.spaceLG),
+                decoration: BoxDecoration(
+                  color: AppColors.border,
+                  borderRadius: BorderRadius.circular(999),
+                ),
+              ),
+            ),
+
+            // Icon
+            Container(
+              padding: EdgeInsets.all(r.spaceLG),
+              decoration: BoxDecoration(
+                color: AppColors.surfaceAlt,
+                shape: BoxShape.circle,
+                border: Border.all(color: AppColors.border),
+              ),
+              child: Icon(
+                Icons.bookmark_outline,
+                color: AppColors.textSecondary,
+                size: r.iconXL,
+              ),
+            ),
+
+            SizedBox(height: r.spaceLG),
+
+            // Title
+            Text(
+              'Sign in to Save Places',
+              style: TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: r.fontXL,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+
+            SizedBox(height: r.spaceXS),
+
+            // Subtitle
+            Text(
+              'Create an account or sign in to save\nyour favorite destinations.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: AppColors.textSecondary,
+                fontSize: r.fontMD,
+                height: 1.5,
+              ),
+            ),
+
+            SizedBox(height: r.spaceLG),
+
+            // Sign In button
+            GestureDetector(
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  PageRouteBuilder(
+                    pageBuilder: (_, __, ___) =>
+                    const LoginScreen(),
+                    transitionsBuilder:
+                        (_, animation, __, child) =>
+                        SlideTransition(
+                          position: Tween<Offset>(
+                            begin: const Offset(0, 1),
+                            end: Offset.zero,
+                          ).animate(CurvedAnimation(
+                            parent: animation,
+                            curve: Curves.easeOutCubic,
+                          )),
+                          child: child,
+                        ),
+                    transitionDuration:
+                    const Duration(milliseconds: 400),
+                  ),
+                );
+              },
+              child: Container(
+                width: double.infinity,
+                padding:
+                EdgeInsets.symmetric(vertical: r.spaceMD),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius:
+                  BorderRadius.circular(r.radiusLG),
+                ),
+                child: Text(
+                  'Sign In',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: r.fontMD,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ),
+
+            SizedBox(height: r.spaceSM),
+
+            // Register button
+            GestureDetector(
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  PageRouteBuilder(
+                    pageBuilder: (_, __, ___) =>
+                    const RegisterScreen(),
+                    transitionsBuilder:
+                        (_, animation, __, child) =>
+                        SlideTransition(
+                          position: Tween<Offset>(
+                            begin: const Offset(0, 1),
+                            end: Offset.zero,
+                          ).animate(CurvedAnimation(
+                            parent: animation,
+                            curve: Curves.easeOutCubic,
+                          )),
+                          child: child,
+                        ),
+                    transitionDuration:
+                    const Duration(milliseconds: 400),
+                  ),
+                );
+              },
+              child: Container(
+                width: double.infinity,
+                padding:
+                EdgeInsets.symmetric(vertical: r.spaceMD),
+                decoration: BoxDecoration(
+                  color: Colors.transparent,
+                  borderRadius:
+                  BorderRadius.circular(r.radiusLG),
+                  border: Border.all(color: AppColors.border),
+                ),
+                child: Text(
+                  'Create Account',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: r.fontMD,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+
+            SizedBox(height: r.spaceSM),
+
+            // Maybe later
+            GestureDetector(
+              onTap: () => Navigator.pop(context),
+              child: Text(
+                'Maybe later',
+                style: TextStyle(
+                  color: AppColors.textMuted,
+                  fontSize: r.fontSM,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
-  Widget _buildBottomNav() {
-    return Container(
-      decoration: const BoxDecoration(
-        color: Color(0xFF0A0A0A),
-        border: Border(
-          top: BorderSide(color: Color(0xFF1E1E1E), width: 1),
+  @override
+  Widget build(BuildContext context) {
+    final r = Responsive(context);
+
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      body: _screens[_currentIndex],
+      bottomNavigationBar: Container(
+        decoration: const BoxDecoration(
+          color: AppColors.background,
+          border: Border(
+            top: BorderSide(color: AppColors.borderAlt, width: 1),
+          ),
         ),
-      ),
-      child: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          if (index == 1) {
-            Navigator.push(
-              context,
-              PageRouteBuilder(
-                pageBuilder: (_, __, ___) => const SearchScreen(),
-                transitionsBuilder: (_, animation, __, child) =>
-                    FadeTransition(opacity: animation, child: child),
-                transitionDuration: const Duration(milliseconds: 300),
-              ),
-            );
-          } else {
-            setState(() => _currentIndex = index);
-          }
-        },
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: const Color(0xFFFF6D00),
-        unselectedItemColor: const Color(0xFF555555),
-        selectedLabelStyle: const TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w600,
+        child: BottomNavigationBar(
+          currentIndex: _currentIndex,
+          onTap: (index) {
+            if (index == 1) {
+              Navigator.push(
+                context,
+                PageRouteBuilder(
+                  pageBuilder: (_, __, ___) =>
+                  const SearchScreen(),
+                  transitionsBuilder:
+                      (_, animation, __, child) =>
+                      FadeTransition(
+                        opacity: animation,
+                        child: child,
+                      ),
+                  transitionDuration:
+                  const Duration(milliseconds: 300),
+                ),
+              );
+            } else if (index == 2) {
+              _checkAuthForSaved();
+            } else {
+              setState(() => _currentIndex = index);
+            }
+          },
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          type: BottomNavigationBarType.fixed,
+          selectedItemColor: AppColors.orange,
+          unselectedItemColor: const Color(0xFF555555),
+          selectedLabelStyle: TextStyle(
+            fontSize: r.fontXS,
+            fontWeight: FontWeight.w600,
+          ),
+          unselectedLabelStyle: TextStyle(fontSize: r.fontXS),
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home_outlined),
+              activeIcon: Icon(Icons.home),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.search_outlined),
+              activeIcon: Icon(Icons.search),
+              label: 'Search',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.bookmark_outline),
+              activeIcon: Icon(Icons.bookmark),
+              label: 'Saved',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.settings_outlined),
+              activeIcon: Icon(Icons.settings),
+              label: 'Settings',
+            ),
+          ],
         ),
-        unselectedLabelStyle: const TextStyle(fontSize: 11),
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            activeIcon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search_outlined),
-            activeIcon: Icon(Icons.search),
-            label: 'Search',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.bookmark_outline),
-            activeIcon: Icon(Icons.bookmark),
-            label: 'Saved',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings_outlined),
-            activeIcon: Icon(Icons.settings),
-            label: 'Settings',
-          ),
-        ],
       ),
     );
   }
 }
+
+// ─── Home Tab ──────────────────────────────────────────
 
 class _HomeTab extends StatefulWidget {
   const _HomeTab();
@@ -103,7 +330,7 @@ class _HomeTab extends StatefulWidget {
 
 class _HomeTabState extends State<_HomeTab> {
   final MapController _mapController = MapController();
-  LatLng _currentPosition = const LatLng(14.5995, 120.9842); // Manila default
+  LatLng _currentPosition = const LatLng(14.5995, 120.9842);
   bool _isLoadingLocation = true;
 
   final List<Map<String, String>> _recentSearches = const [
@@ -120,13 +347,21 @@ class _HomeTabState extends State<_HomeTab> {
 
   Future<void> _getUserLocation() async {
     try {
-      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) return;
+      bool serviceEnabled =
+      await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        setState(() => _isLoadingLocation = false);
+        return;
+      }
 
-      LocationPermission permission = await Geolocator.checkPermission();
+      LocationPermission permission =
+      await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) return;
+        if (permission == LocationPermission.denied) {
+          setState(() => _isLoadingLocation = false);
+          return;
+        }
       }
 
       final position = await Geolocator.getCurrentPosition(
@@ -135,13 +370,16 @@ class _HomeTabState extends State<_HomeTab> {
 
       if (mounted) {
         setState(() {
-          _currentPosition = LatLng(position.latitude, position.longitude);
+          _currentPosition =
+              LatLng(position.latitude, position.longitude);
           _isLoadingLocation = false;
         });
         _mapController.move(_currentPosition, 15);
       }
     } catch (e) {
-      setState(() => _isLoadingLocation = false);
+      if (mounted) {
+        setState(() => _isLoadingLocation = false);
+      }
     }
   }
 
@@ -151,10 +389,12 @@ class _HomeTabState extends State<_HomeTab> {
 
   @override
   Widget build(BuildContext context) {
+    final r = Responsive(context);
+
     return Stack(
       children: [
 
-        // ✅ Actual Flutter Map
+        // Flutter Map
         FlutterMap(
           mapController: _mapController,
           options: MapOptions(
@@ -164,7 +404,6 @@ class _HomeTabState extends State<_HomeTab> {
             maxZoom: 18,
           ),
           children: [
-            // Dark map tiles
             TileLayer(
               urlTemplate:
               'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
@@ -172,21 +411,18 @@ class _HomeTabState extends State<_HomeTab> {
               userAgentPackageName: 'com.example.ruta_go',
               retinaMode: true,
             ),
-
-            // User location marker
             MarkerLayer(
               markers: [
                 Marker(
                   point: _currentPosition,
-                  width: 60,
-                  height: 60,
+                  width: r.screenWidth * 0.15,
+                  height: r.screenWidth * 0.15,
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
-                      // Pulse ring
                       Container(
-                        width: 48,
-                        height: 48,
+                        width: r.screenWidth * 0.12,
+                        height: r.screenWidth * 0.12,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: Colors.blue.withOpacity(0.15),
@@ -196,10 +432,9 @@ class _HomeTabState extends State<_HomeTab> {
                           ),
                         ),
                       ),
-                      // Center dot
                       Container(
-                        width: 16,
-                        height: 16,
+                        width: r.screenWidth * 0.04,
+                        height: r.screenWidth * 0.04,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: Colors.blue,
@@ -224,40 +459,40 @@ class _HomeTabState extends State<_HomeTab> {
           ],
         ),
 
-        // Loading indicator
+        // Loading location indicator
         if (_isLoadingLocation)
           Positioned(
-            top: 60,
+            top: r.screenHeight * 0.06,
             left: 0,
             right: 0,
             child: Center(
               child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
+                padding: EdgeInsets.symmetric(
+                  horizontal: r.spaceMD,
+                  vertical: r.spaceXS,
                 ),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF141414),
+                  color: AppColors.surface,
                   borderRadius: BorderRadius.circular(999),
-                  border: Border.all(color: const Color(0xFF2A2A2A)),
+                  border: Border.all(color: AppColors.border),
                 ),
-                child: const Row(
+                child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     SizedBox(
-                      width: 12,
-                      height: 12,
-                      child: CircularProgressIndicator(
+                      width: r.iconSM,
+                      height: r.iconSM,
+                      child: const CircularProgressIndicator(
                         strokeWidth: 2,
                         color: Colors.white,
                       ),
                     ),
-                    SizedBox(width: 8),
+                    SizedBox(width: r.spaceXS),
                     Text(
                       'Getting your location...',
                       style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
+                        color: AppColors.textPrimary,
+                        fontSize: r.fontSM,
                       ),
                     ),
                   ],
@@ -266,19 +501,20 @@ class _HomeTabState extends State<_HomeTab> {
             ),
           ),
 
-        // Recenter FAB button
+        // Recenter FAB
         Positioned(
-          right: 16,
-          bottom: 320,
+          right: r.spaceMD,
+          bottom: r.screenHeight * 0.38,
           child: GestureDetector(
             onTap: _recenterMap,
             child: Container(
-              width: 44,
-              height: 44,
+              width: r.screenWidth * 0.11,
+              height: r.screenWidth * 0.11,
               decoration: BoxDecoration(
-                color: const Color(0xFF141414),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFF2A2A2A)),
+                color: AppColors.surface,
+                borderRadius:
+                BorderRadius.circular(r.radiusMD),
+                border: Border.all(color: AppColors.border),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.3),
@@ -286,10 +522,10 @@ class _HomeTabState extends State<_HomeTab> {
                   ),
                 ],
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.my_location,
                 color: Colors.white,
-                size: 20,
+                size: r.iconSM,
               ),
             ),
           ),
@@ -303,33 +539,37 @@ class _HomeTabState extends State<_HomeTab> {
           builder: (context, scrollController) {
             return Container(
               decoration: const BoxDecoration(
-                color: Color(0xFF0A0A0A),
+                color: AppColors.background,
                 borderRadius: BorderRadius.vertical(
                   top: Radius.circular(24),
                 ),
                 border: Border(
-                  top: BorderSide(color: Color(0xFF1E1E1E), width: 1),
+                  top: BorderSide(
+                      color: AppColors.borderAlt, width: 1),
                 ),
               ),
               child: ListView(
                 controller: scrollController,
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: EdgeInsets.symmetric(
+                    horizontal: r.spaceMD),
                 children: [
 
                   // Drag handle
                   Center(
                     child: Container(
-                      margin: const EdgeInsets.symmetric(vertical: 12),
-                      width: 36,
+                      margin: EdgeInsets.symmetric(
+                          vertical: r.spaceSM),
+                      width: r.screenWidth * 0.1,
                       height: 4,
                       decoration: BoxDecoration(
-                        color: const Color(0xFF2A2A2A),
-                        borderRadius: BorderRadius.circular(999),
+                        color: AppColors.border,
+                        borderRadius:
+                        BorderRadius.circular(999),
                       ),
                     ),
                   ),
 
-                  const SizedBox(height: 4),
+                  SizedBox(height: r.spaceXS),
 
                   // Search bar
                   GestureDetector(
@@ -337,58 +577,61 @@ class _HomeTabState extends State<_HomeTab> {
                       Navigator.push(
                         context,
                         PageRouteBuilder(
-                          pageBuilder: (context, animation, secondaryAnimation) =>
+                          pageBuilder: (_, __, ___) =>
                           const SearchScreen(),
                           transitionsBuilder:
-                              (context, animation, secondaryAnimation, child) {
-                            return SlideTransition(
-                              position: Tween<Offset>(
-                                begin: const Offset(0, 1),
-                                end: Offset.zero,
-                              ).animate(CurvedAnimation(
-                                parent: animation,
-                                curve: Curves.easeOutCubic,
-                              )),
-                              child: child,
-                            );
-                          },
-                          transitionDuration: const Duration(milliseconds: 400),
+                              (_, animation, __, child) =>
+                              SlideTransition(
+                                position: Tween<Offset>(
+                                  begin: const Offset(0, 1),
+                                  end: Offset.zero,
+                                ).animate(CurvedAnimation(
+                                  parent: animation,
+                                  curve: Curves.easeOutCubic,
+                                )),
+                                child: child,
+                              ),
+                          transitionDuration: const Duration(
+                              milliseconds: 400),
                         ),
                       );
                     },
                     child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 16,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: r.spaceMD,
+                        vertical: r.spaceMD,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF141414),
-                        borderRadius: BorderRadius.circular(16),
+                        color: AppColors.surface,
+                        borderRadius: BorderRadius.circular(
+                            r.radiusLG),
                         border: Border.all(
-                          color: const Color(0xFF2A2A2A),
-                        ),
+                            color: AppColors.border),
                       ),
                       child: Row(
                         children: [
                           Container(
-                            padding: const EdgeInsets.all(6),
+                            padding:
+                            EdgeInsets.all(r.spaceXS),
                             decoration: BoxDecoration(
-                              color:
-                              const Color(0xFFFF6D00).withOpacity(0.15),
-                              borderRadius: BorderRadius.circular(8),
+                              color: AppColors.orange
+                                  .withOpacity(0.15),
+                              borderRadius:
+                              BorderRadius.circular(
+                                  r.radiusSM),
                             ),
-                            child: const Icon(
+                            child: Icon(
                               Icons.search,
-                              color: Color(0xFFFF6D00),
-                              size: 18,
+                              color: AppColors.orange,
+                              size: r.iconSM,
                             ),
                           ),
-                          const SizedBox(width: 12),
-                          const Text(
+                          SizedBox(width: r.spaceSM),
+                          Text(
                             'Where are you going?',
                             style: TextStyle(
-                              color: Color(0xFF666666),
-                              fontSize: 15,
+                              color: AppColors.textMuted,
+                              fontSize: r.fontMD,
                             ),
                           ),
                         ],
@@ -396,27 +639,31 @@ class _HomeTabState extends State<_HomeTab> {
                     ),
                   ),
 
-                  const SizedBox(height: 24),
+                  SizedBox(height: r.spaceLG),
 
-                  // Recent searches
-                  const Text(
+                  // Recent searches label
+                  Text(
                     'RECENT SEARCHES',
                     style: TextStyle(
-                      color: Color(0xFF444444),
-                      fontSize: 11,
+                      color: AppColors.textDisabled,
+                      fontSize: r.fontXS,
                       fontWeight: FontWeight.w700,
                       letterSpacing: 1.5,
                     ),
                   ),
 
-                  const SizedBox(height: 12),
+                  SizedBox(height: r.spaceSM),
 
-                  ..._recentSearches.map((place) => _RecentSearchTile(
-                    name: place['name']!,
-                    address: place['address']!,
-                  )),
+                  // Recent searches
+                  ..._recentSearches.map(
+                        (place) => _RecentSearchTile(
+                      name: place['name']!,
+                      address: place['address']!,
+                      r: r,
+                    ),
+                  ),
 
-                  const SizedBox(height: 24),
+                  SizedBox(height: r.spaceLG),
                 ],
               ),
             );
@@ -427,60 +674,74 @@ class _HomeTabState extends State<_HomeTab> {
   }
 }
 
+// ─── Recent Search Tile ────────────────────────────────
+
 class _RecentSearchTile extends StatelessWidget {
   final String name;
   final String address;
+  final Responsive r;
 
   const _RecentSearchTile({
     required this.name,
     required this.address,
+    required this.r,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      margin: EdgeInsets.only(bottom: r.spaceSM),
+      padding: EdgeInsets.symmetric(
+        horizontal: r.spaceMD,
+        vertical: r.spaceMD,
+      ),
       decoration: BoxDecoration(
-        color: const Color(0xFF141414),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFF1E1E1E)),
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(r.radiusLG),
+        border: Border.all(color: AppColors.borderAlt),
       ),
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: EdgeInsets.all(r.spaceXS),
             decoration: BoxDecoration(
-              color: const Color(0xFF1E1E1E),
-              borderRadius: BorderRadius.circular(10),
+              color: AppColors.surfaceAlt,
+              borderRadius: BorderRadius.circular(r.radiusSM),
             ),
-            child: const Icon(
+            child: Icon(
               Icons.access_time,
-              color: Color(0xFF555555),
-              size: 16,
+              color: AppColors.textMuted,
+              size: r.iconSM,
             ),
           ),
-          const SizedBox(width: 14),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                name,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
+          SizedBox(width: r.spaceMD),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name,
+                  style: TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: r.fontMD,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                address,
-                style: const TextStyle(
-                  color: Color(0xFF555555),
-                  fontSize: 12,
+                SizedBox(height: r.spaceXS * 0.5),
+                Text(
+                  address,
+                  style: TextStyle(
+                    color: AppColors.textMuted,
+                    fontSize: r.fontSM,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
+          ),
+          Icon(
+            Icons.arrow_forward_ios,
+            color: AppColors.border,
+            size: r.iconSM * 0.75,
           ),
         ],
       ),
