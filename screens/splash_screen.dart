@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ruta_go/screens/home_screen.dart';
 import 'package:ruta_go/screens/onboarding_screen.dart';
 import 'package:ruta_go/theme/app_theme.dart';
@@ -23,67 +22,51 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   void initState() {
     super.initState();
+
     _fadeController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1200),
     );
+
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _fadeController, curve: Curves.easeIn),
     );
+
     _slideController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1000),
     );
+
     _slideAnimation = Tween<Offset>(
       begin: const Offset(0, 0.3),
       end: Offset.zero,
     ).animate(
       CurvedAnimation(parent: _slideController, curve: Curves.easeOutCubic),
     );
+
     _fadeController.forward();
+
     Future.delayed(const Duration(milliseconds: 400), () {
       if (mounted) _slideController.forward();
     });
+
+    // Always go to onboarding — temporary para ma-check design
     Future.delayed(const Duration(seconds: 4), () {
-      _checkFirstTime();
+      _goToOnboarding();
     });
   }
 
-  Future<void> _checkFirstTime() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final bool isFirstTime = prefs.getBool('is_first_time') ?? true;
-      if (!mounted) return;
-      if (isFirstTime) {
-        await prefs.setBool('is_first_time', false);
-        Navigator.pushReplacement(
-          context,
-          PageRouteBuilder(
-            pageBuilder: (_, __, ___) => const OnboardingScreen(),
-            transitionsBuilder: (_, animation, __, child) =>
-                FadeTransition(opacity: animation, child: child),
-            transitionDuration: const Duration(milliseconds: 800),
-          ),
-        );
-      } else {
-        Navigator.pushReplacement(
-          context,
-          PageRouteBuilder(
-            pageBuilder: (_, __, ___) => const HomeScreen(),
-            transitionsBuilder: (_, animation, __, child) =>
-                FadeTransition(opacity: animation, child: child),
-            transitionDuration: const Duration(milliseconds: 800),
-          ),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => const OnboardingScreen()),
-        );
-      }
-    }
+  void _goToOnboarding() {
+    if (!mounted) return;
+    Navigator.pushReplacement(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (_, __, ___) => const OnboardingScreen(),
+        transitionsBuilder: (_, animation, __, child) =>
+            FadeTransition(opacity: animation, child: child),
+        transitionDuration: const Duration(milliseconds: 800),
+      ),
+    );
   }
 
   @override
@@ -101,6 +84,7 @@ class _SplashScreenState extends State<SplashScreen>
       backgroundColor: AppColors.background,
       body: Stack(
         children: [
+
           // Top glow
           Positioned(
             top: -100,
@@ -146,6 +130,7 @@ class _SplashScreenState extends State<SplashScreen>
               children: [
                 SizedBox(height: r.screenHeight * 0.12),
 
+                // Lottie animation
                 Lottie.asset(
                   'assets/animations/splash_animation.json',
                   width: r.screenWidth * 0.75,
@@ -156,10 +141,13 @@ class _SplashScreenState extends State<SplashScreen>
 
                 SizedBox(height: r.screenHeight * 0.04),
 
+                // Text with slide animation
                 SlideTransition(
                   position: _slideAnimation,
                   child: Column(
                     children: [
+
+                      // App name
                       Text(
                         'RutaGo',
                         style: TextStyle(
@@ -169,7 +157,10 @@ class _SplashScreenState extends State<SplashScreen>
                           letterSpacing: 2.0,
                         ),
                       ),
+
                       SizedBox(height: r.spaceXS),
+
+                      // Tagline
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -183,7 +174,7 @@ class _SplashScreenState extends State<SplashScreen>
                           ),
                           SizedBox(width: r.spaceXS),
                           Text(
-                            'Ang daan mo, alam namin.',
+                            'Your route, we know it.',
                             style: TextStyle(
                               color: AppColors.textSecondary,
                               fontSize: r.fontMD,
@@ -207,6 +198,7 @@ class _SplashScreenState extends State<SplashScreen>
 
                 const Spacer(),
 
+                // Progress bar + loading text
                 SlideTransition(
                   position: _slideAnimation,
                   child: Padding(
@@ -224,7 +216,7 @@ class _SplashScreenState extends State<SplashScreen>
                         ),
                         SizedBox(height: r.spaceMD),
                         Text(
-                          'Ini-initialize ang mapa...',
+                          'Initializing map...',
                           style: TextStyle(
                             color: AppColors.textDisabled,
                             fontSize: r.fontSM,
@@ -237,6 +229,7 @@ class _SplashScreenState extends State<SplashScreen>
 
                 SizedBox(height: r.spaceLG),
 
+                // Version
                 Text(
                   'v1.0.0',
                   style: TextStyle(
