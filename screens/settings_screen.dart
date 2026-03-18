@@ -210,7 +210,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         _InfoTile(
                           icon: Icons.code,
                           label: 'Developer',
-                          value: 'RutaGo Team',
+                          value: 'Jomar Dc Aniñon',
                           r: r,
                         ),
                         _Divider(r: r),
