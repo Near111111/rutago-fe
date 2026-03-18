@@ -10,7 +10,6 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  // Settings state
   bool _mrtEnabled = true;
   bool _lrtEnabled = true;
   bool _busEnabled = true;
@@ -64,18 +63,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
             SizedBox(height: r.spaceLG),
 
-            // Settings list
             Expanded(
               child: SingleChildScrollView(
-                padding: EdgeInsets.symmetric(horizontal: r.spaceMD),
+                padding:
+                EdgeInsets.symmetric(horizontal: r.spaceMD),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
 
-                    // Transport preferences
+                    // Transport
                     _SectionLabel(label: 'TRANSPORT', r: r),
                     SizedBox(height: r.spaceSM),
-
                     _SettingsCard(
                       r: r,
                       children: [
@@ -128,9 +126,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     SizedBox(height: r.spaceLG),
 
                     // Notifications
-                    _SectionLabel(label: 'NOTIFICATIONS', r: r),
+                    _SectionLabel(
+                        label: 'NOTIFICATIONS', r: r),
                     SizedBox(height: r.spaceSM),
-
                     _SettingsCard(
                       r: r,
                       children: [
@@ -141,8 +139,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           'Notify when approaching your stop',
                           value: _alertsEnabled,
                           r: r,
-                          onChanged: (val) =>
-                              setState(() => _alertsEnabled = val),
+                          onChanged: (val) => setState(
+                                  () => _alertsEnabled = val),
                         ),
                         _Divider(r: r),
                         _ToggleTile(
@@ -160,9 +158,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     SizedBox(height: r.spaceLG),
 
                     // Preferences
-                    _SectionLabel(label: 'PREFERENCES', r: r),
+                    _SectionLabel(
+                        label: 'PREFERENCES', r: r),
                     SizedBox(height: r.spaceSM),
-
                     _SettingsCard(
                       r: r,
                       children: [
@@ -170,20 +168,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           icon: Icons.language,
                           label: 'Language',
                           value: _selectedLanguage,
-                          options: const ['English', 'Filipino'],
+                          options: const [
+                            'English',
+                            'Filipino'
+                          ],
                           r: r,
-                          onChanged: (val) =>
-                              setState(() => _selectedLanguage = val),
+                          onChanged: (val) => setState(
+                                  () => _selectedLanguage = val),
                         ),
                         _Divider(r: r),
                         _SelectTile(
                           icon: Icons.straighten,
                           label: 'Distance Unit',
                           value: _selectedDistanceUnit,
-                          options: const ['Kilometers', 'Miles'],
+                          options: const [
+                            'Kilometers',
+                            'Miles'
+                          ],
                           r: r,
-                          onChanged: (val) => setState(
-                                  () => _selectedDistanceUnit = val),
+                          onChanged: (val) => setState(() =>
+                          _selectedDistanceUnit = val),
                         ),
                       ],
                     ),
@@ -193,7 +197,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     // About
                     _SectionLabel(label: 'ABOUT', r: r),
                     SizedBox(height: r.spaceSM),
-
                     _SettingsCard(
                       r: r,
                       children: [
@@ -294,7 +297,8 @@ class _SettingsCard extends StatelessWidget {
   final List<Widget> children;
   final Responsive r;
 
-  const _SettingsCard({required this.children, required this.r});
+  const _SettingsCard(
+      {required this.children, required this.r});
 
   @override
   Widget build(BuildContext context) {
@@ -325,6 +329,76 @@ class _Divider extends StatelessWidget {
   }
 }
 
+// ─── Custom Toggle ─────────────────────────────────────
+
+class _CustomToggle extends StatelessWidget {
+  final bool value;
+  final Color color;
+  final Responsive r;
+  final ValueChanged<bool> onChanged;
+
+  const _CustomToggle({
+    required this.value,
+    required this.color,
+    required this.r,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final trackWidth = r.screenWidth * 0.13;
+    final trackHeight = r.screenWidth * 0.07;
+    final thumbSize = trackHeight - 6;
+
+    return GestureDetector(
+      onTap: () => onChanged(!value),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeInOut,
+        width: trackWidth,
+        height: trackHeight,
+        padding: const EdgeInsets.all(3),
+        decoration: BoxDecoration(
+          color: value
+              ? color.withOpacity(0.25)
+              : AppColors.surfaceAlt,
+          borderRadius: BorderRadius.circular(999),
+          border: Border.all(
+            color: value
+                ? color.withOpacity(0.5)
+                : AppColors.border,
+            width: 1.5,
+          ),
+        ),
+        child: AnimatedAlign(
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.easeInOut,
+          alignment: value
+              ? Alignment.centerRight
+              : Alignment.centerLeft,
+          child: Container(
+            width: thumbSize,
+            height: thumbSize,
+            decoration: BoxDecoration(
+              color: value ? color : AppColors.textMuted,
+              borderRadius: BorderRadius.circular(999),
+              boxShadow: value
+                  ? [
+                BoxShadow(
+                  color: color.withOpacity(0.4),
+                  blurRadius: 6,
+                  spreadRadius: 1,
+                ),
+              ]
+                  : [],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 // ─── Transport Toggle ──────────────────────────────────
 
 class _TransportToggle extends StatelessWidget {
@@ -348,63 +422,76 @@ class _TransportToggle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.all(r.spaceMD),
-      child: Row(
-        children: [
-          Container(
-            padding: EdgeInsets.all(r.spaceSM),
-            decoration: BoxDecoration(
-              color: value
-                  ? color.withOpacity(0.15)
-                  : AppColors.surfaceAlt,
-              borderRadius: BorderRadius.circular(r.radiusMD),
-              border: Border.all(
+    return GestureDetector(
+      onTap: () => onChanged(!value),
+      child: Padding(
+        padding: EdgeInsets.all(r.spaceMD),
+        child: Row(
+          children: [
+
+            // Icon container
+            Container(
+              width: r.screenWidth * 0.12,
+              height: r.screenWidth * 0.12,
+              decoration: BoxDecoration(
                 color: value
-                    ? color.withOpacity(0.3)
-                    : AppColors.border,
+                    ? color.withOpacity(0.15)
+                    : AppColors.surfaceAlt,
+                borderRadius:
+                BorderRadius.circular(r.radiusMD),
+                border: Border.all(
+                  color: value
+                      ? color.withOpacity(0.3)
+                      : AppColors.border,
+                ),
+              ),
+              child: Icon(
+                icon,
+                color:
+                value ? color : AppColors.textMuted,
+                size: r.iconMD,
               ),
             ),
-            child: Icon(
-              icon,
-              color: value ? color : AppColors.textMuted,
-              size: r.iconMD,
-            ),
-          ),
-          SizedBox(width: r.spaceMD),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: TextStyle(
-                    color: value
-                        ? AppColors.textPrimary
-                        : AppColors.textSecondary,
-                    fontSize: r.fontMD,
-                    fontWeight: FontWeight.w600,
+
+            SizedBox(width: r.spaceMD),
+
+            // Label + subtitle
+            Expanded(
+              child: Column(
+                crossAxisAlignment:
+                CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: TextStyle(
+                      color: value
+                          ? AppColors.textPrimary
+                          : AppColors.textSecondary,
+                      fontSize: r.fontMD,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
-                ),
-                Text(
-                  subtitle,
-                  style: TextStyle(
-                    color: AppColors.textMuted,
-                    fontSize: r.fontXS,
+                  SizedBox(height: r.spaceXS * 0.25),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      color: AppColors.textMuted,
+                      fontSize: r.fontXS,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          Switch(
-            value: value,
-            onChanged: onChanged,
-            activeColor: color,
-            activeTrackColor: color.withOpacity(0.3),
-            inactiveThumbColor: AppColors.textMuted,
-            inactiveTrackColor: AppColors.surfaceAlt,
-          ),
-        ],
+
+            // Custom toggle
+            _CustomToggle(
+              value: value,
+              color: color,
+              r: r,
+              onChanged: onChanged,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -431,57 +518,69 @@ class _ToggleTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.all(r.spaceMD),
-      child: Row(
-        children: [
-          Container(
-            padding: EdgeInsets.all(r.spaceSM),
-            decoration: BoxDecoration(
-              color: AppColors.surfaceAlt,
-              borderRadius: BorderRadius.circular(r.radiusMD),
-              border: Border.all(color: AppColors.border),
+    return GestureDetector(
+      onTap: () => onChanged(!value),
+      child: Padding(
+        padding: EdgeInsets.all(r.spaceMD),
+        child: Row(
+          children: [
+
+            // Icon container
+            Container(
+              width: r.screenWidth * 0.12,
+              height: r.screenWidth * 0.12,
+              decoration: BoxDecoration(
+                color: AppColors.surfaceAlt,
+                borderRadius:
+                BorderRadius.circular(r.radiusMD),
+                border: Border.all(color: AppColors.border),
+              ),
+              child: Icon(
+                icon,
+                color: value
+                    ? AppColors.textPrimary
+                    : AppColors.textMuted,
+                size: r.iconMD,
+              ),
             ),
-            child: Icon(
-              icon,
-              color: value
-                  ? AppColors.textPrimary
-                  : AppColors.textMuted,
-              size: r.iconMD,
-            ),
-          ),
-          SizedBox(width: r.spaceMD),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: TextStyle(
-                    color: AppColors.textPrimary,
-                    fontSize: r.fontMD,
-                    fontWeight: FontWeight.w600,
+
+            SizedBox(width: r.spaceMD),
+
+            // Label + subtitle
+            Expanded(
+              child: Column(
+                crossAxisAlignment:
+                CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: TextStyle(
+                      color: AppColors.textPrimary,
+                      fontSize: r.fontMD,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
-                ),
-                Text(
-                  subtitle,
-                  style: TextStyle(
-                    color: AppColors.textMuted,
-                    fontSize: r.fontXS,
+                  SizedBox(height: r.spaceXS * 0.25),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      color: AppColors.textMuted,
+                      fontSize: r.fontXS,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          Switch(
-            value: value,
-            onChanged: onChanged,
-            activeColor: Colors.white,
-            activeTrackColor: Colors.white.withOpacity(0.3),
-            inactiveThumbColor: AppColors.textMuted,
-            inactiveTrackColor: AppColors.surfaceAlt,
-          ),
-        ],
+
+            // Custom toggle — white
+            _CustomToggle(
+              value: value,
+              color: Colors.white,
+              r: r,
+              onChanged: onChanged,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -514,11 +613,15 @@ class _SelectTile extends StatelessWidget {
         padding: EdgeInsets.all(r.spaceMD),
         child: Row(
           children: [
+
+            // Icon container
             Container(
-              padding: EdgeInsets.all(r.spaceSM),
+              width: r.screenWidth * 0.12,
+              height: r.screenWidth * 0.12,
               decoration: BoxDecoration(
                 color: AppColors.surfaceAlt,
-                borderRadius: BorderRadius.circular(r.radiusMD),
+                borderRadius:
+                BorderRadius.circular(r.radiusMD),
                 border: Border.all(color: AppColors.border),
               ),
               child: Icon(
@@ -527,7 +630,9 @@ class _SelectTile extends StatelessWidget {
                 size: r.iconMD,
               ),
             ),
+
             SizedBox(width: r.spaceMD),
+
             Expanded(
               child: Text(
                 label,
@@ -538,6 +643,7 @@ class _SelectTile extends StatelessWidget {
                 ),
               ),
             ),
+
             Text(
               value,
               style: TextStyle(
@@ -545,7 +651,9 @@ class _SelectTile extends StatelessWidget {
                 fontSize: r.fontSM,
               ),
             ),
+
             SizedBox(width: r.spaceXS),
+
             Icon(
               Icons.chevron_right,
               color: AppColors.textMuted,
@@ -577,17 +685,22 @@ class _SelectTile extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+
+            // Handle
             Center(
               child: Container(
                 width: r.screenWidth * 0.1,
                 height: 4,
-                margin: EdgeInsets.only(bottom: r.spaceMD),
+                margin:
+                EdgeInsets.only(bottom: r.spaceMD),
                 decoration: BoxDecoration(
                   color: AppColors.border,
-                  borderRadius: BorderRadius.circular(999),
+                  borderRadius:
+                  BorderRadius.circular(999),
                 ),
               ),
             ),
+
             Text(
               label,
               style: TextStyle(
@@ -596,7 +709,9 @@ class _SelectTile extends StatelessWidget {
                 fontWeight: FontWeight.w700,
               ),
             ),
+
             SizedBox(height: r.spaceMD),
+
             ...options.map((option) => GestureDetector(
               onTap: () {
                 onChanged(option);
@@ -605,7 +720,8 @@ class _SelectTile extends StatelessWidget {
               child: Container(
                 width: double.infinity,
                 padding: EdgeInsets.all(r.spaceMD),
-                margin: EdgeInsets.only(bottom: r.spaceXS),
+                margin: EdgeInsets.only(
+                    bottom: r.spaceXS),
                 decoration: BoxDecoration(
                   color: value == option
                       ? Colors.white
@@ -642,6 +758,7 @@ class _SelectTile extends StatelessWidget {
                 ),
               ),
             )),
+
             SizedBox(height: r.spaceSM),
           ],
         ),
@@ -671,8 +788,11 @@ class _InfoTile extends StatelessWidget {
       padding: EdgeInsets.all(r.spaceMD),
       child: Row(
         children: [
+
+          // Icon container
           Container(
-            padding: EdgeInsets.all(r.spaceSM),
+            width: r.screenWidth * 0.12,
+            height: r.screenWidth * 0.12,
             decoration: BoxDecoration(
               color: AppColors.surfaceAlt,
               borderRadius: BorderRadius.circular(r.radiusMD),
@@ -684,7 +804,9 @@ class _InfoTile extends StatelessWidget {
               size: r.iconMD,
             ),
           ),
+
           SizedBox(width: r.spaceMD),
+
           Expanded(
             child: Text(
               label,
@@ -695,6 +817,7 @@ class _InfoTile extends StatelessWidget {
               ),
             ),
           ),
+
           Text(
             value,
             style: TextStyle(
@@ -731,11 +854,15 @@ class _ActionTile extends StatelessWidget {
         padding: EdgeInsets.all(r.spaceMD),
         child: Row(
           children: [
+
+            // Icon container
             Container(
-              padding: EdgeInsets.all(r.spaceSM),
+              width: r.screenWidth * 0.12,
+              height: r.screenWidth * 0.12,
               decoration: BoxDecoration(
                 color: AppColors.surfaceAlt,
-                borderRadius: BorderRadius.circular(r.radiusMD),
+                borderRadius:
+                BorderRadius.circular(r.radiusMD),
                 border: Border.all(color: AppColors.border),
               ),
               child: Icon(
@@ -744,7 +871,9 @@ class _ActionTile extends StatelessWidget {
                 size: r.iconMD,
               ),
             ),
+
             SizedBox(width: r.spaceMD),
+
             Expanded(
               child: Text(
                 label,
@@ -755,6 +884,7 @@ class _ActionTile extends StatelessWidget {
                 ),
               ),
             ),
+
             Icon(
               Icons.chevron_right,
               color: AppColors.textMuted,

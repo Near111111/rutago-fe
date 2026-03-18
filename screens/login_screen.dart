@@ -28,12 +28,9 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _login() async {
     if (_emailController.text.isEmpty ||
         _passwordController.text.isEmpty) return;
-
     setState(() => _isLoading = true);
-
     // TODO: Connect to FastAPI auth endpoint
     await Future.delayed(const Duration(seconds: 2));
-
     if (mounted) {
       setState(() => _isLoading = false);
       Navigator.pop(context);
@@ -53,7 +50,7 @@ class _LoginScreenState extends State<LoginScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
 
-              SizedBox(height: r.spaceMD),
+              SizedBox(height: r.spaceSM),
 
               // Back button
               GestureDetector(
@@ -64,7 +61,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     color: AppColors.surface,
                     borderRadius:
                     BorderRadius.circular(r.radiusMD),
-                    border: Border.all(color: AppColors.border),
+                    border:
+                    Border.all(color: AppColors.border),
                   ),
                   child: Icon(
                     Icons.arrow_back,
@@ -122,8 +120,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 r: r,
                 obscureText: _obscurePassword,
                 suffix: GestureDetector(
-                  onTap: () => setState(
-                          () => _obscurePassword = !_obscurePassword),
+                  onTap: () => setState(() =>
+                  _obscurePassword = !_obscurePassword),
                   child: Icon(
                     _obscurePassword
                         ? Icons.visibility_outlined
@@ -159,8 +157,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
                   width: double.infinity,
-                  padding:
-                  EdgeInsets.symmetric(vertical: r.spaceMD),
+                  padding: EdgeInsets.symmetric(
+                      vertical: r.spaceMD),
                   decoration: BoxDecoration(
                     color: _isLoading
                         ? Colors.white.withOpacity(0.5)
@@ -173,7 +171,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: SizedBox(
                       width: r.iconMD,
                       height: r.iconMD,
-                      child: const CircularProgressIndicator(
+                      child:
+                      const CircularProgressIndicator(
                         color: Colors.black,
                         strokeWidth: 2,
                       ),
@@ -239,13 +238,14 @@ class _LoginScreenState extends State<LoginScreen> {
                 },
                 child: Container(
                   width: double.infinity,
-                  padding:
-                  EdgeInsets.symmetric(vertical: r.spaceMD),
+                  padding: EdgeInsets.symmetric(
+                      vertical: r.spaceMD),
                   decoration: BoxDecoration(
                     color: Colors.transparent,
                     borderRadius:
                     BorderRadius.circular(r.radiusLG),
-                    border: Border.all(color: AppColors.border),
+                    border:
+                    Border.all(color: AppColors.border),
                   ),
                   child: Text(
                     'Create an Account',
@@ -268,7 +268,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 
-// ─── Shared Widgets ────────────────────────────────────
+// ─── Widgets ───────────────────────────────────────────
 
 class _FieldLabel extends StatelessWidget {
   final String label;

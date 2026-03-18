@@ -40,25 +40,30 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     if (_passwordController.text !=
         _confirmPasswordController.text) {
+      final r = Responsive(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
             'Passwords do not match!',
             style: TextStyle(
-                color: Colors.white,
-                fontSize: Responsive(context).fontMD),
+              color: Colors.white,
+              fontSize: r.fontMD,
+            ),
           ),
           backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(
+                Responsive(context).radiusMD),
+          ),
         ),
       );
       return;
     }
 
     setState(() => _isLoading = true);
-
     // TODO: Connect to FastAPI register endpoint
     await Future.delayed(const Duration(seconds: 2));
-
     if (mounted) {
       setState(() => _isLoading = false);
       Navigator.pop(context);
@@ -78,7 +83,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
 
-              SizedBox(height: r.spaceMD),
+              SizedBox(height: r.spaceSM),
 
               // Back button
               GestureDetector(
@@ -89,7 +94,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     color: AppColors.surface,
                     borderRadius:
                     BorderRadius.circular(r.radiusMD),
-                    border: Border.all(color: AppColors.border),
+                    border:
+                    Border.all(color: AppColors.border),
                   ),
                   child: Icon(
                     Icons.arrow_back,
@@ -159,8 +165,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 r: r,
                 obscureText: _obscurePassword,
                 suffix: GestureDetector(
-                  onTap: () => setState(
-                          () => _obscurePassword = !_obscurePassword),
+                  onTap: () => setState(() =>
+                  _obscurePassword = !_obscurePassword),
                   child: Icon(
                     _obscurePassword
                         ? Icons.visibility_outlined
@@ -174,7 +180,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
               SizedBox(height: r.spaceMD),
 
               // Confirm Password
-              _FieldLabel(label: 'CONFIRM PASSWORD', r: r),
+              _FieldLabel(
+                  label: 'CONFIRM PASSWORD', r: r),
               SizedBox(height: r.spaceSM),
               _InputField(
                 controller: _confirmPasswordController,
@@ -203,8 +210,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
                   width: double.infinity,
-                  padding:
-                  EdgeInsets.symmetric(vertical: r.spaceMD),
+                  padding: EdgeInsets.symmetric(
+                      vertical: r.spaceMD),
                   decoration: BoxDecoration(
                     color: _isLoading
                         ? Colors.white.withOpacity(0.5)
@@ -217,7 +224,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     child: SizedBox(
                       width: r.iconMD,
                       height: r.iconMD,
-                      child: const CircularProgressIndicator(
+                      child:
+                      const CircularProgressIndicator(
                         color: Colors.black,
                         strokeWidth: 2,
                       ),
@@ -241,8 +249,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
               Row(
                 children: [
                   Expanded(
-                      child: Container(
-                          height: 1, color: AppColors.border)),
+                    child: Container(
+                        height: 1, color: AppColors.border),
+                  ),
                   Padding(
                     padding: EdgeInsets.symmetric(
                         horizontal: r.spaceMD),
@@ -255,8 +264,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ),
                   Expanded(
-                      child: Container(
-                          height: 1, color: AppColors.border)),
+                    child: Container(
+                        height: 1, color: AppColors.border),
+                  ),
                 ],
               ),
 
@@ -281,13 +291,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 },
                 child: Container(
                   width: double.infinity,
-                  padding:
-                  EdgeInsets.symmetric(vertical: r.spaceMD),
+                  padding: EdgeInsets.symmetric(
+                      vertical: r.spaceMD),
                   decoration: BoxDecoration(
                     color: Colors.transparent,
                     borderRadius:
                     BorderRadius.circular(r.radiusLG),
-                    border: Border.all(color: AppColors.border),
+                    border:
+                    Border.all(color: AppColors.border),
                   ),
                   child: Text(
                     'Already have an account? Sign In',
@@ -310,7 +321,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 }
 
-// ─── Shared Widgets ────────────────────────────────────
+// ─── Widgets ───────────────────────────────────────────
 
 class _FieldLabel extends StatelessWidget {
   final String label;
@@ -365,7 +376,11 @@ class _InputField extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(icon, color: AppColors.textMuted, size: r.iconSM),
+          Icon(
+            icon,
+            color: AppColors.textMuted,
+            size: r.iconSM,
+          ),
           SizedBox(width: r.spaceSM),
           Expanded(
             child: TextField(
