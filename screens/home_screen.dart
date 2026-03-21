@@ -335,7 +335,7 @@ class _HomeTabState extends State<_HomeTab> {
 
   final List<Map<String, String>> _recentSearches = const [
     {'name': 'SM Mall of Asia', 'address': 'Bay City, Pasay'},
-    {'name': 'Makati CBD', 'address': 'Ayala Avenue, Makati'},
+    {'name': 'Makati', 'address': 'Ayala Avenue, Makati'},
     {'name': 'BGC High Street', 'address': 'Bonifacio Global City'},
   ];
 
